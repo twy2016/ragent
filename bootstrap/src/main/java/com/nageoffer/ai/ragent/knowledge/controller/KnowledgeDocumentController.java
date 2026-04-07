@@ -49,8 +49,10 @@ import java.util.List;
 /**
  * 知识库文档管理控制器
  * 提供文档的上传、分块、删除、查询、启用/禁用等功能
- */
-@RestController
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@RestController
 @RequiredArgsConstructor
 @Validated
 public class KnowledgeDocumentController {

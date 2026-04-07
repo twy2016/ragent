@@ -22,7 +22,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
+/**
+ * 向量空间规格定义。
+ * <p>
+ * 用于跨底层向量引擎统一描述一个逻辑向量空间应具备的元信息。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

@@ -33,8 +33,12 @@ import java.util.Date;
 /**
  * 会话消息实体类
  * 用于存储对话过程中的消息记录
- */
-@Data
+ * <p>
+ * 每条记录对应会话中的一条原始消息，是会话回放和摘要压缩的基础数据来源。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

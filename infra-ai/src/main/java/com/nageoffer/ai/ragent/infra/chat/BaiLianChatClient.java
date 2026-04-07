@@ -48,6 +48,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
+/**
+ * 
+BaiLianChatClient
+。
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */
 
 @Slf4j
 @Service

@@ -35,8 +35,12 @@ import java.util.Map;
  * - name 和 examples 字段已移除，这些信息由意图树表（IntentNodeDO）管理
  * - 意图树负责意图识别阶段的匹配，MCPTool 负责参数提取和执行阶段
  * - 一个 MCPTool 可以对应多个意图节点，实现业务视角和技术视角的分离
- */
-@Data
+ * <p>
+ * 因此 MCPTool 更偏向“技术执行契约”，而不是面向用户的问题理解语义。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -73,6 +77,8 @@ public class MCPTool {
 
     /**
      * 参数定义
+     * <p>
+     * 每个参数既描述类型和必填性，也可以携带默认值和枚举约束，供参数提取器与执行器共同使用。
      */
     @Data
     @Builder

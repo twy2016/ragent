@@ -20,5 +20,12 @@ package com.nageoffer.ai.ragent.rag.dao.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.nageoffer.ai.ragent.rag.dao.entity.RagTraceRunDO;
 
-public interface RagTraceRunMapper extends BaseMapper<RagTraceRunDO> {
+/**
+ * Trace 根记录表 Mapper。
+ * <p>
+ * 提供对 t_rag_trace_run 表的基础持久化操作。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface RagTraceRunMapper extends BaseMapper<RagTraceRunDO> {
 }

@@ -35,8 +35,10 @@ import java.util.List;
  * - 实现类需保证向量维度一致（dimension() 固定）
  * - 批量向量化应进行模型级优化，例如减少 RPC / 本地推理调用次数
  * - 文本需在向量化前进行清洗（trim、空过滤、控制符处理等）
- */
-public interface EmbeddingService {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface EmbeddingService {
 
     /**
      * 对单个文本进行向量化（Embedding）

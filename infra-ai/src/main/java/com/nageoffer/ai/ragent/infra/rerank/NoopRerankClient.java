@@ -24,6 +24,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+/**
+ * 
+NoopRerankClient
+。
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */
 
 @Service
 public class NoopRerankClient implements RerankClient {

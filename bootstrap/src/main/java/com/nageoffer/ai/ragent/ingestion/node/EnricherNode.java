@@ -47,8 +47,10 @@ import java.util.stream.Collectors;
 /**
  * 文本增强节点
  * 该节点通过调用大模型对文档分片进行信息提取或补充，如提取关键词、生成摘要、补充元数据等
- */
-@Component
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 public class EnricherNode implements IngestionNode {
 
     private final ObjectMapper objectMapper;

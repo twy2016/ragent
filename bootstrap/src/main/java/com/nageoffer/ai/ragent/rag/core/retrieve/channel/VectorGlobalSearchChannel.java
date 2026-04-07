@@ -41,8 +41,12 @@ import java.util.concurrent.Executor;
  * <p>
  * 在所有知识库中进行向量检索，作为兜底策略
  * 当意图识别失败或置信度低时启用
- */
-@Slf4j
+ * <p>
+ * 它的召回范围最广，但噪声通常也更高，因此优先级低于意图定向检索。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Component
 public class VectorGlobalSearchChannel implements SearchChannel {
 
@@ -155,6 +159,8 @@ public class VectorGlobalSearchChannel implements SearchChannel {
 
     /**
      * 获取所有 KB 类型的 collection
+     * <p>
+     * 这里会排除重复 collection，避免同一知识库被重复检索。
      */
     private List<String> getAllKBCollections() {
         Set<String> collections = new HashSet<>();

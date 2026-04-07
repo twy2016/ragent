@@ -30,8 +30,10 @@ import java.util.Optional;
 /**
  * 文档切分策略工厂，用于管理并获取不同的文档切分实现
  * 通过构造器注入所有 {@link ChunkingStrategy} 类型的 Bean，在初始化时自动注册
- */
-@Component
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 @RequiredArgsConstructor
 public class ChunkingStrategyFactory {
 

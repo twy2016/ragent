@@ -26,8 +26,12 @@ import java.util.Date;
 
 /**
  * 示例问题视图对象
- */
-@Data
+ * <p>
+ * 供欢迎页和后台管理页展示示例问题及其元信息。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

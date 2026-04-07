@@ -44,8 +44,16 @@ import static com.nageoffer.ai.ragent.rag.constant.RAGConstant.MCP_PARAMETER_EXT
 
 /**
  * 基于 LLM 的 MCP 参数提取器实现
- */
-@Slf4j
+ * <p>
+ * 作用是把“自然语言问题”转成“工具调用参数”：
+ * 1. 读取工具定义，告诉模型有哪些参数、类型、默认值和枚举范围；
+ * 2. 让模型按 JSON 输出结构化参数；
+ * 3. 解析结果并补齐默认值；
+ * 4. 若模型输出不可靠，则回退到默认参数集合。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Service
 @RequiredArgsConstructor
 public class LLMMCPParameterExtractor implements MCPParameterExtractor {
@@ -66,6 +74,7 @@ public class LLMMCPParameterExtractor implements MCPParameterExtractor {
         }
 
         // 构建 Prompt：优先使用自定义提示词
+        // 如果存在节点级自定义提示词，则优先使用；否则回退到通用参数提取模板。
         List<ChatMessage> messages = new ArrayList<>(3);
         String systemPrompt = StrUtil.isNotBlank(customPromptTemplate)
                 ? customPromptTemplate
@@ -88,9 +97,11 @@ public class LLMMCPParameterExtractor implements MCPParameterExtractor {
             log.info("MCP 参数提取 LLM 响应: {}", raw);
 
             // 解析 JSON 响应
+            // 这里只接受工具定义中真实存在的参数键。
             Map<String, Object> extracted = parseJsonResponse(raw, tool);
 
             // 填充默认值
+            // 对模型没给出的参数补默认值，保证下游工具调用参数更完整。
             fillDefaults(extracted, tool);
 
             log.info("MCP 参数提取完成, toolId: {}, 使用自定义提示词: {}, 参数: {}",
@@ -108,6 +119,7 @@ public class LLMMCPParameterExtractor implements MCPParameterExtractor {
 
     private Map<String, Object> buildDefaultParameters(MCPTool tool) {
         Map<String, Object> defaultParams = new HashMap<>();
+        // 当模型输出不可用时，只保留工具定义里声明的默认值，避免凭空造参数。
         fillDefaults(defaultParams, tool);
         return defaultParams;
     }
@@ -150,6 +162,7 @@ public class LLMMCPParameterExtractor implements MCPParameterExtractor {
             return new HashMap<>();
         }
         // 清理可能的 markdown 代码块
+        // 模型常见输出形态是 ```json ... ```，先统一清洗再做 JSON 解析。
         String cleaned = LLMResponseCleaner.stripMarkdownCodeFence(raw);
         JsonElement element = JsonParser.parseString(cleaned);
         if (!element.isJsonObject()) {
@@ -159,6 +172,7 @@ public class LLMMCPParameterExtractor implements MCPParameterExtractor {
         JsonObject obj = element.getAsJsonObject();
         Map<String, Object> result = new HashMap<>();
         // 只提取工具定义中声明的参数
+        // 忽略模型额外编造的字段。
         for (String paramName : tool.getParameters().keySet()) {
             if (obj.has(paramName) && !obj.get(paramName).isJsonNull()) {
                 JsonElement value = obj.get(paramName);
@@ -181,6 +195,7 @@ public class LLMMCPParameterExtractor implements MCPParameterExtractor {
                     return null;
                 }
 
+                // 尽量把整数值收窄成 int/long，减少下游工具自己再做类型转换。
                 if (d == Math.floor(d) && !Double.isInfinite(d)) {
                     if (d >= Integer.MIN_VALUE && d <= Integer.MAX_VALUE) {
                         return (int) d;
@@ -211,6 +226,7 @@ public class LLMMCPParameterExtractor implements MCPParameterExtractor {
             return;
         }
 
+        // 默认值补齐只在“参数缺失”时生效，不覆盖模型已经明确抽取出来的值。
         for (Map.Entry<String, MCPTool.ParameterDef> entry : tool.getParameters().entrySet()) {
             String paramName = entry.getKey();
             MCPTool.ParameterDef def = entry.getValue();

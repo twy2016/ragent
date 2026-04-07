@@ -32,8 +32,10 @@ import java.util.Map;
 /**
  * HTTP 链接文档获取器
  * 用于从指定的 HTTP/HTTPS 链接地址获取文档内容
- */
-@Component
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 @RequiredArgsConstructor
 public class HttpUrlFetcher implements DocumentFetcher {
 

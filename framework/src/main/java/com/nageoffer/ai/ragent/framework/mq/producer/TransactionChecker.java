@@ -23,8 +23,10 @@ import com.nageoffer.ai.ragent.framework.mq.MessageWrapper;
  * 事务消息回查接口，按 topic 注册到 {@link DelegatingTransactionListener}
  * <p>
  * 回查时 Broker 可能将请求发送到任意实例，因此实现类必须基于消息内容（而非内存状态）查询 DB 判断本地事务是否已提交。
- */
-public interface TransactionChecker {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface TransactionChecker {
 
     /**
      * 检查本地事务是否已提交

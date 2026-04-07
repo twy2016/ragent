@@ -27,8 +27,10 @@ import org.springframework.validation.annotation.Validated;
 
 /**
  * 分布式信号量配置
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Validated
 @Configuration
 @ConfigurationProperties(prefix = "rag.semaphore")

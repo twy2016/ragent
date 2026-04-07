@@ -42,7 +42,16 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.UUID;
 
-@Service
+/**
+ * 基于 S3 兼容对象存储的文件服务实现。
+ * <p>
+ * 同时提供两类上传路径：
+ * 1. 预签名 URL + HttpURLConnection 的低内存流式上传；
+ * 2. SDK 原生上传的可靠重试模式。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Service
 @RequiredArgsConstructor
 public class S3FileStorageService implements FileStorageService {
 

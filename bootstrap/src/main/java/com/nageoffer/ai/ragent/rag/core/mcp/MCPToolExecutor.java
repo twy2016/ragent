@@ -19,8 +19,12 @@ package com.nageoffer.ai.ragent.rag.core.mcp;
 
 /**
  * MCP 工具执行器接口
- */
-public interface MCPToolExecutor {
+ * <p>
+ * 每个执行器对应一个具体工具，同时负责暴露工具定义和执行该工具请求。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface MCPToolExecutor {
 
     /**
      * 获取工具定义
@@ -39,6 +43,8 @@ public interface MCPToolExecutor {
 
     /**
      * 工具 ID（快捷方法）
+     * <p>
+     * 默认从工具定义中读取，保证注册表和执行逻辑共用同一个唯一标识。
      */
     default String getToolId() {
         return getToolDefinition().getToolId();
@@ -47,6 +53,8 @@ public interface MCPToolExecutor {
     /**
      * 是否支持该请求
      * 默认只检查 toolId 是否匹配
+     * <p>
+     * 若执行器需要更复杂的能力协商，可以自行覆写。
      */
     default boolean supports(MCPRequest request) {
         return getToolId().equals(request.getToolId());

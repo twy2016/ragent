@@ -39,8 +39,10 @@ import java.util.regex.Pattern;
  * - 块类型：Heading、Paragraph（空行分段）、CodeFence（```...```）、Atomic（整行 ![]()/[]()）
  * - 通过 min/target/max 预算控制 chunk 大小
  * - 支持可选的 overlap
- */
-@Component
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 public class StructureAwareTextChunker implements ChunkingStrategy {
 
     private static final Pattern HEADING = Pattern.compile("^#{1,6}\\s+.*$");

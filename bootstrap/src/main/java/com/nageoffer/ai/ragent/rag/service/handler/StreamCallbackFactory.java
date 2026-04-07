@@ -28,8 +28,12 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 /**
  * StreamCallback 工厂
  * 负责创建各种类型的 StreamCallback 实例
- */
-@Component
+ * <p>
+ * 通过工厂集中组装依赖，可以避免业务层直接感知具体回调实现的构造细节。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 @RequiredArgsConstructor
 public class StreamCallbackFactory {
 
@@ -49,6 +53,7 @@ public class StreamCallbackFactory {
     public StreamCallback createChatEventHandler(SseEmitter emitter,
                                                  String conversationId,
                                                  String taskId) {
+        // 先将上下文与依赖封装成参数对象，再交给具体回调实现使用。
         StreamChatHandlerParams params = StreamChatHandlerParams.builder()
                 .emitter(emitter)
                 .conversationId(conversationId)
@@ -59,6 +64,7 @@ public class StreamCallbackFactory {
                 .taskManager(taskManager)
                 .build();
 
+        // 当前聊天链路统一使用 StreamChatEventHandler 处理模型流式回调。
         return new StreamChatEventHandler(params);
     }
 }

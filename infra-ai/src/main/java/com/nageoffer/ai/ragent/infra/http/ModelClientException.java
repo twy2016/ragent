@@ -22,8 +22,10 @@ import lombok.Getter;
 /**
  * 模型客户端异常类
  * 用于封装模型调用过程中的各类异常信息
- */
-@Getter
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Getter
 public class ModelClientException extends RuntimeException {
 
     /**

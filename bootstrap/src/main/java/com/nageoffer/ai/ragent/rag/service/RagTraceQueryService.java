@@ -27,12 +27,25 @@ import java.util.List;
 
 /**
  * RAG Trace 查询服务
- */
-public interface RagTraceQueryService {
+ * <p>
+ * 提供 trace 根记录和节点详情的查询能力，供观测页面或排障接口使用。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface RagTraceQueryService {
 
+    /**
+     * 分页查询 trace 根记录。
+     */
     IPage<RagTraceRunVO> pageRuns(RagTraceRunPageRequest request);
 
+    /**
+     * 查询单条 trace 的根记录与节点详情。
+     */
     RagTraceDetailVO detail(String traceId);
 
+    /**
+     * 查询指定 trace 下的全部节点记录。
+     */
     List<RagTraceNodeVO> listNodes(String traceId);
 }

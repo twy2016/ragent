@@ -17,5 +17,12 @@
 
 package com.nageoffer.ai.ragent.rag.dto;
 
-public record MetaPayload(String conversationId, String taskId) {
+/**
+ * SSE 元数据事件载荷。
+ * <p>
+ * 通常在流式开始阶段返回，用于告诉前端当前会话和任务标识。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public record MetaPayload(String conversationId, String taskId) {
 }

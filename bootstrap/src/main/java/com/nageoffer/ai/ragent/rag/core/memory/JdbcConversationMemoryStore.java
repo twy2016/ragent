@@ -34,7 +34,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
+/**
+ * 基于 JDBC 的会话记忆存储实现。
+ * <p>
+ * 它不做复杂缓存，直接通过会话和消息服务访问数据库，因此行为比较直接：
+ * 1. 读取时只取有限轮次的近历史；
+ * 2. 写入用户消息时顺带创建或刷新会话元信息；
+ * 3. 返回给上游前，会把消息规整成适合 LLM 消费的 USER / ASSISTANT 序列。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Service
 public class JdbcConversationMemoryStore implements ConversationMemoryStore {
 
@@ -52,6 +62,7 @@ public class JdbcConversationMemoryStore implements ConversationMemoryStore {
 
     @Override
     public List<ChatMessage> loadHistory(String conversationId, String userId) {
+        // 只读取配置要求保留的近 N 轮消息，避免上下文无限膨胀。
         int maxMessages = resolveMaxHistoryMessages();
         List<ConversationMessageVO> dbMessages = conversationMessageService.listMessages(
                 conversationId,
@@ -63,6 +74,7 @@ public class JdbcConversationMemoryStore implements ConversationMemoryStore {
             return List.of();
         }
 
+        // 数据库存储格式先转为统一 ChatMessage，再过滤掉不适合作为上下文的脏数据。
         List<ChatMessage> result = dbMessages.stream()
                 .map(this::toChatMessage)
                 .filter(this::isHistoryMessage)
@@ -73,6 +85,7 @@ public class JdbcConversationMemoryStore implements ConversationMemoryStore {
 
     @Override
     public String append(String conversationId, String userId, ChatMessage message) {
+        // 会话记忆中的每条消息都会落到消息表，保留原始对话明细。
         ConversationMessageBO conversationMessage = ConversationMessageBO.builder()
                 .conversationId(conversationId)
                 .userId(userId)
@@ -82,6 +95,8 @@ public class JdbcConversationMemoryStore implements ConversationMemoryStore {
         String messageId = conversationMessageService.addMessage(conversationMessage);
 
         if (message.getRole() == ChatMessage.Role.USER) {
+            // 用户消息到达时同步刷新会话主表：
+            // 新会话会被创建；老会话只会更新最后活跃时间和必要元信息。
             ConversationCreateRequest conversation = ConversationCreateRequest.builder()
                     .conversationId(conversationId)
                     .userId(userId)
@@ -110,6 +125,7 @@ public class JdbcConversationMemoryStore implements ConversationMemoryStore {
         if (messages == null || messages.isEmpty()) {
             return List.of();
         }
+        // 再做一次角色过滤，确保只保留 LLM 真正需要的 user / assistant 消息。
         List<ChatMessage> cleaned = messages.stream()
                 .filter(this::isHistoryMessage)
                 .toList();
@@ -117,6 +133,8 @@ public class JdbcConversationMemoryStore implements ConversationMemoryStore {
             return List.of();
         }
         int start = 0;
+        // 如果历史最前面是一串 assistant 消息，说明上下文不完整；
+        // 这里主动裁掉前导 assistant，避免模型看到“没有前文的问题回答”。
         while (start < cleaned.size() && cleaned.get(start).getRole() == ChatMessage.Role.ASSISTANT) {
             start++;
         }
@@ -134,6 +152,7 @@ public class JdbcConversationMemoryStore implements ConversationMemoryStore {
 
     private int resolveMaxHistoryMessages() {
         int maxTurns = memoryProperties.getHistoryKeepTurns();
+        // 一轮对话通常包含 user + assistant 两条消息，因此这里乘 2。
         return maxTurns * 2;
     }
 }

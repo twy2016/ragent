@@ -32,8 +32,12 @@ import java.util.Date;
 
 /**
  * RAG Trace 节点记录
- */
-@Data
+ * <p>
+ * 对应一条 trace 中的单个方法级节点，通常由 @RagTraceNode 切面自动写入。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

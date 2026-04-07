@@ -24,7 +24,14 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Data
+/**
+ * 意图树展示视图对象。
+ * <p>
+ * 用于把后台维护的意图树节点组织成前端可直接渲染的树形结构。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

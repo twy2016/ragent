@@ -27,8 +27,12 @@ import java.util.Map;
 
 /**
  * MCP 调用响应
- */
-@Data
+ * <p>
+ * 同时兼容结构化结果和可直接拼接进 Prompt 的文本结果，是工具执行阶段的统一输出类型。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -73,6 +77,8 @@ public class MCPResponse {
 
     /**
      * 创建成功响应
+     * <p>
+     * 适合仅返回文本结果的工具。
      */
     public static MCPResponse success(String toolId, String textResult) {
         return MCPResponse.builder()
@@ -84,6 +90,8 @@ public class MCPResponse {
 
     /**
      * 创建成功响应（带结构化数据）
+     * <p>
+     * 适合既要给模型看文本，又要给程序消费结构化字段的场景。
      */
     public static MCPResponse success(String toolId, String textResult, Map<String, Object> data) {
         return MCPResponse.builder()
@@ -96,6 +104,8 @@ public class MCPResponse {
 
     /**
      * 创建失败响应
+     * <p>
+     * 调用方可以通过 success=false 和 errorCode/errorMessage 统一处理错误分支。
      */
     public static MCPResponse error(String toolId, String errorCode, String errorMessage) {
         return MCPResponse.builder()

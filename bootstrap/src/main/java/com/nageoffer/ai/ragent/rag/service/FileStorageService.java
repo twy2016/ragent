@@ -22,7 +22,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 
-public interface FileStorageService {
+/**
+ * 文件存储服务接口。
+ * <p>
+ * 抽象上传、读取和删除文件能力，当前主要面向 S3 兼容对象存储实现。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface FileStorageService {
 
     /**
      * 上传文件（流式，低内存）

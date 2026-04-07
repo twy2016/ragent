@@ -29,8 +29,12 @@ import java.util.Map;
 /**
  * 系统设置视图对象
  * 包含RAG和AI相关的配置信息
- */
-@Setter
+ * <p>
+ * 用于把分散在多个配置类中的系统参数聚合成前端设置页可直接消费的结构。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Setter
 @Getter
 public class SystemSettingsVO {
 

@@ -37,7 +37,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-@Slf4j
+/**
+ * 基于 Milvus 的向量检索实现。
+ * <p>
+ * 负责把自然语言问题转成 embedding 后，在 Milvus 中执行相似度检索并返回 chunk 列表。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "rag.vector.type", havingValue = "milvus", matchIfMissing = true)
@@ -49,6 +56,7 @@ public class MilvusRetrieverService implements RetrieverService {
 
     @Override
     public List<RetrievedChunk> retrieve(RetrieveRequest retrieveParam) {
+        // 先把自然语言 query 转成向量，再走统一的按向量检索流程。
         List<Float> emb = embeddingService.embed(retrieveParam.getQuery());
         float[] vec = toArray(emb);
 
@@ -59,6 +67,7 @@ public class MilvusRetrieverService implements RetrieverService {
 
     @Override
     public List<RetrievedChunk> retrieveByVector(float[] vector, RetrieveRequest retrieveParam) {
+        // 检索前对向量做归一化，和余弦相似度度量保持一致。
         List<BaseVector> vectors = List.of(new FloatVec(vector));
 
         Map<String, Object> params = new HashMap<>();

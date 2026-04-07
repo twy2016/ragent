@@ -33,8 +33,10 @@ import lombok.NoArgsConstructor;
  * </ul>
  * 该结构适合在不同模型/厂商之间做一层通用抽象
  * </p>
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatMessage {

@@ -26,8 +26,10 @@ import java.util.Optional;
 /**
  * 服务端运行异常
  * 请求运行过程中出现的不符合业务预期的异常
- */
-public class ServiceException extends AbstractException {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public class ServiceException extends AbstractException {
 
     public ServiceException(String message) {
         this(message, null, BaseErrorCode.SERVICE_ERROR);

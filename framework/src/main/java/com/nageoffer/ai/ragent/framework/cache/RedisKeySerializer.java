@@ -28,8 +28,10 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Redis Key 序列化
- */
-@RequiredArgsConstructor
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@RequiredArgsConstructor
 @Component
 @ConditionalOnProperty(name = "framework.cache.redis.prefix")
 public class RedisKeySerializer implements RedisSerializer<String> {

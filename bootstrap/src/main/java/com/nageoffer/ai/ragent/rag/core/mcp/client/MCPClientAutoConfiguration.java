@@ -31,8 +31,12 @@ import java.util.List;
 /**
  * MCP 客户端自动配置
  * 根据配置的 MCP Server 列表，自动创建 MCPClient 并注册远程工具到 MCPToolRegistry
- */
-@Slf4j
+ * <p>
+ * 这样远程 MCP Server 暴露出来的工具，可以像本地工具一样被统一路由和调用。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties(MCPClientProperties.class)

@@ -37,8 +37,10 @@ import java.util.stream.Collectors;
  *   <li>按 MIME 类型选择：通过 {@link #selectByMimeType(String)} 自动匹配支持该 MIME 类型的解析器</li>
  * </ul>
  * </p>
- */
-@Component
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 public class DocumentParserSelector {
 
     private final List<DocumentParser> strategies;

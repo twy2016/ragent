@@ -24,7 +24,14 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Data
+/**
+ * 意图节点创建请求。
+ * <p>
+ * 用于后台管理端创建意图树节点，并同时携带检索、Prompt 和 MCP 路由所需配置。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

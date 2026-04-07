@@ -29,8 +29,10 @@ import java.util.Map;
  * 策略值使用小写 snake_case，如 fixed_size、structure_aware
  * <p>
  * 每个枚举常量实现两个 abstract 方法，负责构建类型安全的 ChunkingOptions
- */
-@Getter
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Getter
 public enum ChunkingMode {
 
     /**

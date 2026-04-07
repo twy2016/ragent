@@ -22,8 +22,10 @@ import lombok.Data;
 
 /**
  * 知识库分页查询请求
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 public class KnowledgeBasePageRequest extends Page {
 
     /**

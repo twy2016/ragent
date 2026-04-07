@@ -34,7 +34,14 @@ import com.nageoffer.ai.ragent.rag.service.QueryTermMappingAdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-@Service
+/**
+ * 查询术语映射规则管理服务实现。
+ * <p>
+ * 负责后台管理端对术语映射规则的增删改查，并在每次变更后刷新内存缓存。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Service
 @RequiredArgsConstructor
 public class QueryTermMappingAdminServiceImpl implements QueryTermMappingAdminService {
 

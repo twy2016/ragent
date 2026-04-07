@@ -39,8 +39,10 @@ import static com.nageoffer.ai.ragent.rag.constant.RAGConstant.RAG_ENTERPRISE_PR
  * RAG Prompt 编排服务
  * <p>
  * 根据检索结果场景（KB / MCP / Mixed）选择模板，并构造最终发送给 LLM 的消息序列
- */
-@Service
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Service
 @RequiredArgsConstructor
 public class RAGPromptService {
 
@@ -68,13 +70,16 @@ public class RAGPromptService {
                                                      String question,
                                                      List<String> subQuestions) {
         List<ChatMessage> messages = new ArrayList<>();
+        // systemPrompt 决定整体回答策略；没有模板时允许为空，由后续消息单独承载上下文。
         String systemPrompt = buildSystemPrompt(context);
         if (StrUtil.isNotBlank(systemPrompt)) {
             messages.add(ChatMessage.system(systemPrompt));
         }
+        // MCP 上下文更像“外部动态数据”，用 system 消息提供，强调这是辅助事实。
         if (StrUtil.isNotBlank(context.getMcpContext())) {
             messages.add(ChatMessage.system(formatEvidence(MCP_CONTEXT_HEADER, context.getMcpContext())));
         }
+        // KB 上下文沿用 user 侧证据形式，和业务问题一起喂给模型。
         if (StrUtil.isNotBlank(context.getKbContext())) {
             messages.add(ChatMessage.user(formatEvidence(KB_CONTEXT_HEADER, context.getKbContext())));
         }
@@ -101,6 +106,7 @@ public class RAGPromptService {
         List<NodeScore> safeIntents = intents == null ? Collections.emptyList() : intents;
 
         // 1) 先剔除“未命中检索”的意图
+        // 这些节点继续参与模板选择没有意义，反而会干扰 Prompt 规划。
         List<NodeScore> retained = safeIntents.stream()
                 .filter(ns -> {
                     IntentNode node = ns.getNode();
@@ -134,6 +140,7 @@ public class RAGPromptService {
     }
 
     private PromptBuildPlan plan(PromptContext context) {
+        // Prompt 场景由“是否存在 KB 证据 / MCP 证据”共同决定。
         if (context.hasMcp() && !context.hasKb()) {
             return planMcpOnly(context);
         }
@@ -147,6 +154,7 @@ public class RAGPromptService {
     }
 
     private PromptBuildPlan planKbOnly(PromptContext context) {
+        // KB-only 场景下允许单意图节点自带专用 Prompt 模板。
         PromptPlan plan = planPrompt(context.getKbIntents(), context.getIntentChunks());
         return PromptBuildPlan.builder()
                 .scene(PromptScene.KB_ONLY)
@@ -162,6 +170,7 @@ public class RAGPromptService {
         String baseTemplate = null;
         if (CollUtil.isNotEmpty(intents) && intents.size() == 1) {
             IntentNode node = intents.get(0).getNode();
+            // MCP-only 场景也支持单工具节点自定义模板，便于约束模型如何解释动态数据。
             String tpl = StrUtil.emptyIfNull(node.getPromptTemplate()).trim();
             if (StrUtil.isNotBlank(tpl)) {
                 baseTemplate = tpl;
@@ -178,6 +187,7 @@ public class RAGPromptService {
     }
 
     private PromptBuildPlan planMixed(PromptContext context) {
+        // 混合场景统一走系统级模板，避免多个节点模板之间互相冲突。
         return PromptBuildPlan.builder()
                 .scene(PromptScene.MIXED)
                 .mcpContext(context.getMcpContext())

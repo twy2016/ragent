@@ -19,6 +19,13 @@ package com.nageoffer.ai.ragent.ingestion.controller.vo;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
+/**
+ * 
+IngestionPipelineNodeVO
+。
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */
 
 @Data
 public class IngestionPipelineNodeVO {

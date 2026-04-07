@@ -22,8 +22,10 @@ import org.springframework.util.StringUtils;
 
 /**
  * 轻量 Token 估算服务
- */
-@Service
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Service
 public class HeuristicTokenCounterService implements TokenCounterService {
 
     @Override

@@ -33,8 +33,12 @@ import java.util.Date;
 
 /**
  * 会话摘要数据实体
- */
-@Data
+ * <p>
+ * 用于保存压缩后的长期上下文，并记录该摘要已经覆盖到哪一条消息。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

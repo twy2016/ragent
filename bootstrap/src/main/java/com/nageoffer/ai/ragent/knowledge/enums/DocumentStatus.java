@@ -24,8 +24,10 @@ import lombok.RequiredArgsConstructor;
  * 文档处理状态枚举
  *
  * <p>表示文档在处理过程中可能处于的各种状态
- */
-@Getter
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Getter
 @RequiredArgsConstructor
 public enum DocumentStatus {
 

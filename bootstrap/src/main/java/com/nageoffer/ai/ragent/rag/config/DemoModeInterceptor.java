@@ -33,8 +33,12 @@ import java.util.Set;
 
 /**
  * 体验环境只读模式拦截器
- */
-@Component
+ * <p>
+ * 在演示或体验环境下统一拦截写操作，避免访客修改真实业务数据。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 @RequiredArgsConstructor
 public class DemoModeInterceptor implements HandlerInterceptor {
 
@@ -65,6 +69,7 @@ public class DemoModeInterceptor implements HandlerInterceptor {
             return true;
         }
         if (isSsePath) {
+            // SSE 接口需要按事件流协议返回拒绝结果，前端才能正确结束流式会话。
             writeSseReject(response);
         } else {
             writeJsonReject(response);
@@ -86,6 +91,7 @@ public class DemoModeInterceptor implements HandlerInterceptor {
     private void writeJsonReject(HttpServletResponse response) throws Exception {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json;charset=UTF-8");
+        // 体验模式下统一返回业务错误码，而不是 HTTP 错误状态，便于前端保持一致处理逻辑。
         Result<Void> result = new Result<Void>()
                 .setCode(BaseErrorCode.CLIENT_ERROR.code())
                 .setMessage(DEMO_REJECT_MESSAGE);

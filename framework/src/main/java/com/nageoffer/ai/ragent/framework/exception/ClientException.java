@@ -23,8 +23,10 @@ import com.nageoffer.ai.ragent.framework.errorcode.IErrorCode;
 /**
  * 客户端异常
  * 用户发起调用请求后因客户端提交参数或其他客户端问题导致的异常
- */
-public class ClientException extends AbstractException {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public class ClientException extends AbstractException {
 
     public ClientException(IErrorCode errorCode) {
         this(null, null, errorCode);

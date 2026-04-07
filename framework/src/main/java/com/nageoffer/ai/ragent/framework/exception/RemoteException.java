@@ -23,8 +23,10 @@ import com.nageoffer.ai.ragent.framework.errorcode.IErrorCode;
 /**
  * 远程服务调用异常
  * 比如订单调用支付失败，向上抛出的异常应该是远程服务调用异常
- */
-public class RemoteException extends AbstractException {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public class RemoteException extends AbstractException {
 
     public RemoteException(String message) {
         this(message, null, BaseErrorCode.REMOTE_ERROR);

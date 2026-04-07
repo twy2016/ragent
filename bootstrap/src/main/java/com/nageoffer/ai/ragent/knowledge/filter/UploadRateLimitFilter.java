@@ -38,8 +38,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * 文件上传限流 Filter
  * 在 multipart 解析之前拦截，防止临时文件产生
- */
-@Slf4j
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @RequiredArgsConstructor

@@ -31,8 +31,12 @@ import java.util.concurrent.Executor;
 /**
  * 意图并行检索器
  * 继承模板类，实现意图特定的检索逻辑
- */
-@Slf4j
+ * <p>
+ * 它会把每个意图节点转成一个独立检索任务，并按节点级 topK 配置动态放大检索范围。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 public class IntentParallelRetriever extends AbstractParallelRetriever<IntentParallelRetriever.IntentTask> {
 
     private final RetrieverService retrieverService;
@@ -48,6 +52,8 @@ public class IntentParallelRetriever extends AbstractParallelRetriever<IntentPar
 
     /**
      * 执行并行检索（重载方法，支持动态 TopK 计算）
+     * <p>
+     * fallbackTopK 是兜底值，真正执行时会结合节点配置和倍率计算每个意图自己的 topK。
      */
     public List<RetrievedChunk> executeParallelRetrieval(String question,
                                                          List<NodeScore> targets,
@@ -95,6 +101,8 @@ public class IntentParallelRetriever extends AbstractParallelRetriever<IntentPar
 
     /**
      * 计算单个意图节点检索 TopK
+     * <p>
+     * 若节点本身配置了专属 topK，则优先使用节点级配置，再乘通道倍率。
      */
     private int resolveIntentTopK(NodeScore nodeScore, int fallbackTopK, int topKMultiplier) {
         int baseTopK = fallbackTopK;

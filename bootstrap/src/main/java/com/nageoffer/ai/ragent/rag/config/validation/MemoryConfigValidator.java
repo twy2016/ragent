@@ -24,8 +24,12 @@ import jakarta.validation.ConstraintValidatorContext;
 /**
  * 记忆配置校验器
  * 校验摘要相关配置的合理性
- */
-public class MemoryConfigValidator implements ConstraintValidator<ValidMemoryConfig, MemoryProperties> {
+ * <p>
+ * 主要防止出现“摘要永远不会触发”这类配置自相矛盾的问题。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public class MemoryConfigValidator implements ConstraintValidator<ValidMemoryConfig, MemoryProperties> {
 
     @Override
     public boolean isValid(MemoryProperties config, ConstraintValidatorContext context) {

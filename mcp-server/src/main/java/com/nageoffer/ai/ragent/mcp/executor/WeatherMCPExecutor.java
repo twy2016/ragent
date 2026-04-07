@@ -30,6 +30,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+/**
+ * 
+WeatherMCPExecutor
+。
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */
 
 @Slf4j
 @Component

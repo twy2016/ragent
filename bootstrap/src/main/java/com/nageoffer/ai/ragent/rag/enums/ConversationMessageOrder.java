@@ -19,8 +19,10 @@ package com.nageoffer.ai.ragent.rag.enums;
 
 /**
  * 对话消息排序枚举
- */
-public enum ConversationMessageOrder {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public enum ConversationMessageOrder {
 
     /**
      * 升序排列

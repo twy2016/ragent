@@ -35,8 +35,10 @@ package com.nageoffer.ai.ragent.rag.constant;
  * 这些常量主要用于控制 RAG 系统的行为和生成质量，包括意图过滤、查询优化、
  * 文档检索和智能问答等核心流程
  * </p>
- */
-public class RAGConstant {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public class RAGConstant {
 
     /**
      * 意图识别最低分数阈值

@@ -24,8 +24,10 @@ import java.util.Date;
 
 /**
  * MyBatis-Plus 源数据自动填充类
- */
-public class MyMetaObjectHandler implements MetaObjectHandler {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public class MyMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void insertFill(MetaObject metaObject) {

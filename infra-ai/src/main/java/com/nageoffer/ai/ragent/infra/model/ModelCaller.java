@@ -26,8 +26,10 @@ package com.nageoffer.ai.ragent.infra.model;
  *
  * @param <C> 客户端类型，表示用于调用模型的客户端实例
  * @param <T> 返回值类型，表示模型调用后的返回结果
- */
-@FunctionalInterface
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@FunctionalInterface
 public interface ModelCaller<C, T> {
 
     /**

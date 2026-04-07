@@ -26,6 +26,10 @@ import com.nageoffer.ai.ragent.rag.core.intent.NodeScore;
  *
  * @param subQuestion 子问题文本
  * @param nodeScores  子问题的意图候选
- */
-public record SubQuestionIntent(String subQuestion, List<NodeScore> nodeScores) {
+ * <p>
+ * 它是“问题拆分”阶段和“意图识别”阶段汇合后的结果，后续检索会以它为基本处理单元。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public record SubQuestionIntent(String subQuestion, List<NodeScore> nodeScores) {
 }

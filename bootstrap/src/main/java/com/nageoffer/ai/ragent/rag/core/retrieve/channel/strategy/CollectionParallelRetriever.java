@@ -29,8 +29,12 @@ import java.util.concurrent.Executor;
 /**
  * Collection 并行检索器
  * 继承模板类，实现 Collection 特定的检索逻辑
- */
-@Slf4j
+ * <p>
+ * 适用于“在多个 collection 上做同一问题检索”的场景，例如全局向量检索通道。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 public class CollectionParallelRetriever extends AbstractParallelRetriever<String> {
 
     private final RetrieverService retrieverService;

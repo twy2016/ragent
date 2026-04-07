@@ -31,8 +31,10 @@ import java.util.Map;
  * 用于在非 Spring 管理的类中获取 Spring 容器中的 Bean 实例
  * 通过实现 ApplicationContextAware 接口，在 Spring 容器启动时自动注入 ApplicationContext
  * 提供了一系列静态方法用于获取 Bean 实例和查询注解信息
- */
-@Component
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 public class ApplicationContextHolder implements ApplicationContextAware {
 
     private static ApplicationContext CONTEXT;

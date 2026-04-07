@@ -52,6 +52,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+/**
+ * 
+IntentTreeServiceImpl
+。
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */
 
 
 @Service

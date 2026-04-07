@@ -35,7 +35,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+/**
+ * 示例问题服务实现。
+ * <p>
+ * 负责后台维护示例问题，并向前端提供随机抽样后的推荐问题列表。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Service
 @RequiredArgsConstructor
 public class SampleQuestionServiceImpl implements SampleQuestionService {
 

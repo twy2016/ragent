@@ -33,8 +33,12 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 提示模板加载器
  * 负责从类路径下加载提示模板文件，并支持模板变量填充功能
- */
-@Slf4j
+ * <p>
+ * 模板内容会做本地缓存，避免同一路径在同一进程内被重复读取磁盘资源。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PromptTemplateLoader {

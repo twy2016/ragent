@@ -21,8 +21,12 @@ import lombok.Data;
 
 /**
  * 关键词映射更新请求
- */
-@Data
+ * <p>
+ * 允许对映射规则的源词、目标词、优先级和启停状态做修改。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 public class QueryTermMappingUpdateRequest {
 
     /**

@@ -30,8 +30,10 @@ import java.util.List;
 /**
  * Sa-Token 权限认证接口实现类
  * 用于实现 Sa-Token 框架的权限和角色验证逻辑
- */
-@Component
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 @RequiredArgsConstructor
 public class SaTokenStpInterfaceImpl implements StpInterface {
 

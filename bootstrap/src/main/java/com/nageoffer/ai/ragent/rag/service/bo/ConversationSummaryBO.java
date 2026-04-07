@@ -24,8 +24,12 @@ import lombok.NoArgsConstructor;
 
 /**
  * 会话摘要业务对象
- */
-@Data
+ * <p>
+ * 用于在摘要生成逻辑和消息/摘要持久化逻辑之间传递摘要数据。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

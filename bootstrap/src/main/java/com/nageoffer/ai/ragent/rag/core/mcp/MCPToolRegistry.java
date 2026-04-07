@@ -22,8 +22,12 @@ import java.util.Optional;
 
 /**
  * MCP 工具注册表接口
- */
-public interface MCPToolRegistry {
+ * <p>
+ * 对上层统一提供工具注册、查找和枚举能力，避免直接依赖具体执行器实现。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface MCPToolRegistry {
 
     /**
      * 注册工具执行器

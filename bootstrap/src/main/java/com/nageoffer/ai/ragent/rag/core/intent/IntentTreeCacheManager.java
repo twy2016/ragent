@@ -30,8 +30,12 @@ import java.util.concurrent.TimeUnit;
 /**
  * 意图树缓存管理器
  * 负责意图树在Redis中的缓存管理
- */
-@Slf4j
+ * <p>
+ * 通过把整棵意图树序列化到 Redis，可以降低每次分类都查库重建树结构的成本。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Component
 @RequiredArgsConstructor
 public class IntentTreeCacheManager {

@@ -21,8 +21,10 @@ package com.nageoffer.ai.ragent.core.parser;
  * 文本清理工具类
  * <p>
  * 提供统一的文本清理逻辑，用于文档解析后的文本规范化
- */
-public final class TextCleanupUtil {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public final class TextCleanupUtil {
 
     private TextCleanupUtil() {
     }

@@ -29,8 +29,10 @@ import java.util.Map;
 /**
  * 分块结果对象
  * 统一的分块输出格式，包含所有必要信息
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

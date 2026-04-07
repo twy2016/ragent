@@ -35,8 +35,10 @@ import java.util.List;
 /**
  * 分布式 Snowflake 初始化器
  * 从 Redis 获取 workerId 和 datacenterId，并注册到 Hutool 的 IdUtil 中
- */
-@Slf4j
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Component
 @RequiredArgsConstructor
 public class SnowflakeIdInitializer {

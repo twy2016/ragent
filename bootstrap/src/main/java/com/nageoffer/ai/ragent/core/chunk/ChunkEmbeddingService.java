@@ -33,8 +33,10 @@ import java.util.stream.Collectors;
 /**
  * 分块嵌入服务
  * 职责单一：为已切分的文本块调用嵌入 API 生成向量
- */
-@Service
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Service
 public class ChunkEmbeddingService {
 
     private final ModelSelector modelSelector;

@@ -49,8 +49,10 @@ import org.springframework.web.servlet.HandlerInterceptor;
  * @author nageoffer
  * @see UserContext
  * @see LoginUser
- */
-@Component
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 @RequiredArgsConstructor
 public class UserContextInterceptor implements HandlerInterceptor {
 

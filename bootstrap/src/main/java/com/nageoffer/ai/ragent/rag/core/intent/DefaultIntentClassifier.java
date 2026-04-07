@@ -51,8 +51,18 @@ import static com.nageoffer.ai.ragent.rag.constant.RAGConstant.INTENT_CLASSIFIER
  * LLM 树形意图分类器（串行实现）
  * <p>
  * 将所有意图节点一次性发送给 LLM 进行识别打分，适用于意图数量较少的场景
- */
-@Slf4j
+ * <p>
+ * 整体思路不是逐层遍历意图树，而是先把所有叶子节点展开成一份候选清单，再把这份清单一次性交给 LLM
+ * 做分类打分。这样做的好处是实现简单、上下文完整；代价是叶子节点变多时，Prompt 体积会随之增长。
+ * <p>
+ * 最终输出的是一组 {@link NodeScore}：
+ * 1. 每个 {@link NodeScore} 对应一个叶子意图节点；
+ * 2. score 表示模型判断该节点与问题的匹配程度；
+ * 3. 结果会按分数降序返回，供后续意图筛选、歧义判断和检索使用。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DefaultIntentClassifier implements IntentClassifier, IntentNodeRegistry {
@@ -64,7 +74,13 @@ public class DefaultIntentClassifier implements IntentClassifier, IntentNodeRegi
 
     /**
      * 从Redis加载意图树并构建内存结构
+     * <p>
      * 每次调用都会重新从Redis读取，确保数据是最新的
+     * <p>
+     * 这里返回的不是最终持久化对象，而是一份临时快照，包含：
+     * 1. allNodes：所有节点，便于后续按 ID 回查；
+     * 2. leafNodes：真正参与分类的叶子节点；
+     * 3. id2Node：LLM 返回节点 ID 后可直接映射回节点对象。
      */
     private IntentTreeData loadIntentTreeData() {
         // 1. 从Redis读取（如果不存在会自动从数据库加载）
@@ -79,6 +95,7 @@ public class DefaultIntentClassifier implements IntentClassifier, IntentNodeRegi
         }
 
         // 3. 构建内存结构（临时使用）
+        // 这里会把树结构拍平成“全量节点 + 叶子节点 + ID 索引”，便于分类阶段直接使用。
         if (CollUtil.isEmpty(roots)) {
             return new IntentTreeData(List.of(), List.of(), Map.of());
         }
@@ -131,11 +148,18 @@ public class DefaultIntentClassifier implements IntentClassifier, IntentNodeRegi
 
     /**
      * 对所有"叶子分类节点"做意图识别，由 LLM 输出每个分类的 score
-     * - 返回结果已按 score 从高到低排序
+     * <p>
+     * 返回结果已按 score 从高到低排序
+     * <p>
+     * 这里的关键点是“只让 LLM 在叶子节点中打分”：
+     * 1. 叶子节点语义最具体，适合直接作为检索/路由依据；
+     * 2. 父节点更多是组织结构，不直接参与最终命中；
+     * 3. 模型返回的 JSON 解析后会被映射成 NodeScore 列表，并按分数降序排序。
      */
     @Override
     public List<NodeScore> classifyTargets(String question) {
         // 每次都从Redis读取最新数据
+        // 这样可以避免节点增删后仍使用旧缓存快照。
         IntentTreeData data = loadIntentTreeData();
 
         String systemPrompt = buildPrompt(data.leafNodes);
@@ -153,6 +177,7 @@ public class DefaultIntentClassifier implements IntentClassifier, IntentNodeRegi
 
         try {
             // 移除可能的 markdown 代码块标记
+            // 模型有时会把 JSON 包在 ```json ... ``` 中，这里先做一次标准清洗。
             String cleanedRaw = LLMResponseCleaner.stripMarkdownCodeFence(raw);
 
             JsonElement root = JsonParser.parseString(cleanedRaw);
@@ -162,6 +187,7 @@ public class DefaultIntentClassifier implements IntentClassifier, IntentNodeRegi
                 arr = root.getAsJsonArray();
             } else if (root.isJsonObject() && root.getAsJsonObject().has("results")) {
                 // 容错：如果模型外面又包了一层 { "results": [...] }
+                // 这里兼容模型额外包一层 results 字段的情况。
                 arr = root.getAsJsonObject().getAsJsonArray("results");
             } else {
                 log.warn("LLM 返回了非预期的 JSON 格式, 原始响应: {}", raw);
@@ -178,6 +204,7 @@ public class DefaultIntentClassifier implements IntentClassifier, IntentNodeRegi
                 String id = obj.get("id").getAsString();
                 double score = obj.get("score").getAsDouble();
 
+                // 只接受当前意图树里真实存在的节点，防止模型“编造”节点 ID。
                 IntentNode node = data.id2Node.get(id);
                 if (node == null) {
                     log.warn("LLM 返回了未知的意图节点 ID: {}, 已跳过", id);
@@ -188,6 +215,7 @@ public class DefaultIntentClassifier implements IntentClassifier, IntentNodeRegi
             }
 
             // 降序排序
+            // 排序后便于后续直接按“最高置信度优先”消费。
             scores.sort(Comparator.comparingDouble(NodeScore::getScore).reversed());
 
             log.info("当前问题：{}\n意图识别树如下所示：{}\n",
@@ -230,6 +258,8 @@ public class DefaultIntentClassifier implements IntentClassifier, IntentNodeRegi
         StringBuilder sb = new StringBuilder();
 
         for (IntentNode node : leafNodes) {
+            // 每个叶子节点都以“可供选择的候选意图”形式展开给模型，
+            // fullPath/description/examples 一起提供，帮助模型区分相似节点。
             sb.append("- id=").append(node.getId()).append("\n");
             sb.append("  path=").append(node.getFullPath()).append("\n");
             sb.append("  description=").append(node.getDescription()).append("\n");
@@ -312,6 +342,7 @@ public class DefaultIntentClassifier implements IntentClassifier, IntentNodeRegi
         }
 
         // 4. 填充 fullPath（跟你原来的 fillFullPath 一样的逻辑）
+        // fullPath 便于后续在 Prompt 中向模型展示“节点在树中的完整语义路径”。
         fillFullPath(roots, null);
 
         return roots;

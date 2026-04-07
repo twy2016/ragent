@@ -49,7 +49,15 @@ import java.util.stream.Collectors;
 
 import static com.nageoffer.ai.ragent.rag.constant.RAGConstant.CONVERSATION_SUMMARY_PROMPT_PATH;
 
-@Slf4j
+/**
+ * 基于数据库和 LLM 的会话摘要服务。
+ * <p>
+ * 目标不是替代完整历史，而是在会话变长后，把较早的多轮消息压缩成一条 system 摘要消息，
+ * 以便在控制上下文长度的同时保留长期对话事实。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Service
 @RequiredArgsConstructor
 public class JdbcConversationMemorySummaryService implements ConversationMemorySummaryService {
@@ -70,12 +78,15 @@ public class JdbcConversationMemorySummaryService implements ConversationMemoryS
 
     @Override
     public void compressIfNeeded(String conversationId, String userId, ChatMessage message) {
+        // 摘要能力可按配置关闭，关闭时不产生任何额外开销。
         if (!memoryProperties.getSummaryEnabled()) {
             return;
         }
+        // 只有 assistant 消息写入后才触发压缩检查，确保一轮问答基本完整。
         if (message.getRole() != ChatMessage.Role.ASSISTANT) {
             return;
         }
+        // 摘要生成可能较慢，统一异步执行，避免阻塞主请求线程。
         CompletableFuture.runAsync(() -> doCompressIfNeeded(conversationId, userId), memorySummaryExecutor)
                 .exceptionally(ex -> {
                     log.error("对话记忆摘要异步任务失败 - conversationId: {}, userId: {}",
@@ -96,6 +107,7 @@ public class JdbcConversationMemorySummaryService implements ConversationMemoryS
             return summary;
         }
 
+        // 摘要在进入模型上下文前会被标记成显式“对话摘要”，提醒模型这是压缩信息而不是原始轮次。
         String content = summary.getContent().trim();
         if (content.startsWith(SUMMARY_PREFIX) || content.startsWith("摘要：")) {
             return summary;
@@ -107,12 +119,14 @@ public class JdbcConversationMemorySummaryService implements ConversationMemoryS
         long startTime = System.currentTimeMillis();
         int triggerTurns = memoryProperties.getSummaryStartTurns();
         int maxTurns = memoryProperties.getHistoryKeepTurns();
+        // 关键阈值配置非法时直接退出，避免摘要逻辑进入不确定状态。
         if (maxTurns <= 0 || triggerTurns <= 0) {
             return;
         }
 
         String lockKey = SUMMARY_LOCK_PREFIX + buildLockKey(conversationId, userId);
         RLock lock = redissonClient.getLock(lockKey);
+        // 使用分布式锁保证同一会话在多节点下不会并发生成多份摘要。
         if (!tryLock(lock)) {
             return;
         }
@@ -131,12 +145,15 @@ public class JdbcConversationMemorySummaryService implements ConversationMemoryS
             if (latestUserTurns.isEmpty()) {
                 return;
             }
+            // cutoffId 表示“最新需要保留为原始历史的边界消息”；
+            // 边界之前的消息才是候选摘要区间。
             String cutoffId = resolveCutoffId(latestUserTurns);
             if (StrUtil.isBlank(cutoffId)) {
                 return;
             }
 
             String afterId = resolveSummaryStartId(conversationId, userId, latestSummary);
+            // 如果现有摘要已经覆盖到了 cutoffId 之后，就说明没有新的可摘要区间。
             if (afterId != null && Long.parseLong(afterId) >= Long.parseLong(cutoffId)) {
                 return;
             }
@@ -156,6 +173,7 @@ public class JdbcConversationMemorySummaryService implements ConversationMemoryS
                 return;
             }
 
+            // 在已有摘要基础上增量合并，避免每次都从会话起点重新总结。
             String existingSummary = latestSummary == null ? "" : latestSummary.getContent();
             String summary = summarizeMessages(toSummarize, existingSummary);
             if (StrUtil.isBlank(summary)) {
@@ -177,6 +195,7 @@ public class JdbcConversationMemorySummaryService implements ConversationMemoryS
 
     private boolean tryLock(RLock lock) {
         try {
+            // 不等待锁，拿不到就直接放弃本次压缩，由后续轮次再触发。
             return lock.tryLock(0, SUMMARY_LOCK_TTL.toMillis(), TimeUnit.MILLISECONDS);
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
@@ -192,6 +211,7 @@ public class JdbcConversationMemorySummaryService implements ConversationMemoryS
 
         int summaryMaxChars = memoryProperties.getSummaryMaxChars();
         List<ChatMessage> summaryMessages = new ArrayList<>();
+        // 摘要 Prompt 会约束输出长度、合并策略和事实来源，尽量避免“凭空扩写”。
         String summaryPrompt = promptTemplateLoader.render(
                 CONVERSATION_SUMMARY_PROMPT_PATH,
                 Map.of("summary_max_chars", String.valueOf(summaryMaxChars))
@@ -199,6 +219,7 @@ public class JdbcConversationMemorySummaryService implements ConversationMemoryS
         summaryMessages.add(ChatMessage.system(summaryPrompt));
 
         if (StrUtil.isNotBlank(existingSummary)) {
+            // 旧摘要作为辅助上下文参与合并，但显式提醒模型不能把旧摘要当成新增事实来源。
             summaryMessages.add(ChatMessage.assistant(
                     "历史摘要（仅用于合并去重，不得作为事实新增来源；若与本轮对话冲突，以本轮对话为准）：\n"
                             + existingSummary.trim()
@@ -230,6 +251,7 @@ public class JdbcConversationMemorySummaryService implements ConversationMemoryS
         if (CollUtil.isEmpty(messages)) {
             return List.of();
         }
+        // 摘要输入只保留 user / assistant 的文本消息，其他角色或空内容都会被剔除。
         return messages.stream()
                 .filter(item -> item != null
                         && StrUtil.isNotBlank(item.getContent())
@@ -251,6 +273,7 @@ public class JdbcConversationMemorySummaryService implements ConversationMemoryS
         if (record == null || StrUtil.isBlank(record.getContent())) {
             return null;
         }
+        // 摘要统一转成 system 角色，强调其语义是“系统提供的压缩上下文”。
         return new ChatMessage(ChatMessage.Role.SYSTEM, record.getContent());
     }
 

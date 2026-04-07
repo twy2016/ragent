@@ -37,8 +37,12 @@ import java.util.List;
  * 默认情况下，Spring Boot 会自动配置一组 {@link HttpMessageConverter}，
  * 其中 {@link StringHttpMessageConverter} 的编码可能不是 UTF-8，通过此配置可以显式设置为 UTF-8 并放到转换器链的最前面
  * </p>
- */
-@Configuration
+ * <p>
+ * 此外还统一开放了跨域配置，便于前端开发和调试环境直接调用后端接口。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Configuration
 public class WebConfig implements WebMvcConfigurer {
 
     /**

@@ -40,8 +40,12 @@ import java.util.stream.Collectors;
 
 /**
  * RAG 设置控制器，负责系统 RAG、AI 模型等配置信息的查询
- */
-@RestController
+ * <p>
+ * 主要为前端设置页提供只读配置视图，集中返回系统当前有效配置。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@RestController
 @RequiredArgsConstructor
 public class RAGSettingsController {
 

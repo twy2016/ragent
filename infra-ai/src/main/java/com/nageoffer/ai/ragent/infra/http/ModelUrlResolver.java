@@ -25,8 +25,10 @@ import java.util.Map;
 /**
  * 模型URL解析器
  * 用于解析AI模型的完整URL地址，支持从候选模型配置或提供商配置中获取URL
- */
-public class ModelUrlResolver {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public class ModelUrlResolver {
 
     /**
      * 私有构造函数，防止实例化工具类

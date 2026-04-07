@@ -28,8 +28,10 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * MCP Streamable HTTP 端点
  * 提供 /mcp 端点接收 JSON-RPC 请求和通知
- */
-@RestController
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@RestController
 @RequiredArgsConstructor
 public class MCPEndpoint {
 

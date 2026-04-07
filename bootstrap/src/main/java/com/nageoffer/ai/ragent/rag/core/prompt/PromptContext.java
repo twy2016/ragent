@@ -26,7 +26,14 @@ import lombok.Data;
 import java.util.List;
 import java.util.Map;
 
-@Data
+/**
+ * Prompt 构建上下文。
+ * <p>
+ * 它是检索阶段与 Prompt 编排阶段之间的桥梁，汇总了问题文本、KB 证据、MCP 动态数据和命中的意图信息。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Builder
 public class PromptContext {
 
@@ -46,6 +53,9 @@ public class PromptContext {
         return StrUtil.isNotBlank(mcpContext);
     }
 
+    /**
+     * 当前上下文中是否存在知识库证据。
+     */
     public boolean hasKb() {
         return StrUtil.isNotBlank(kbContext);
     }

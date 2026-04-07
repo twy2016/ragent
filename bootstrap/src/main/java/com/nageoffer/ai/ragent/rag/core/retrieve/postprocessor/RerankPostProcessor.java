@@ -32,8 +32,12 @@ import java.util.List;
  * <p>
  * 使用 Rerank 模型对结果进行重排序
  * 这是最后一个处理器，输出最终的 Top-K 结果
- */
-@Slf4j
+ * <p>
+ * 它不负责召回，只负责在已有候选 chunk 上做更精细的相关性排序。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Component
 @RequiredArgsConstructor
 public class RerankPostProcessor implements SearchResultPostProcessor {

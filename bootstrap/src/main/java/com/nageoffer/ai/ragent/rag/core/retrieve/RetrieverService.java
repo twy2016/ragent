@@ -38,11 +38,15 @@ import java.util.List;
  * - 可将检索与大模型（LLM）调用解耦，便于替换搜索实现
  * - 可基于不同召回策略扩展：向量检索、混合检索、符号搜索、多模态检索等
  * <p>
+ * 因此上层只需要关心“给定查询，返回相关 chunk 列表”，无需感知底层向量引擎实现差异。
+ * <p>
  * 注意事项：
  * - topK 不宜过大，一般 3〜8 为最佳区间
  * - 建议对 vector 维度进行校验，避免与向量库 schema 不匹配
- */
-public interface RetrieverService {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface RetrieverService {
 
     /**
      * 根据自然语言 Query 进行检索

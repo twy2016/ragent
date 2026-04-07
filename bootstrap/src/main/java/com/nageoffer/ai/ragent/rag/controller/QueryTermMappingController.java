@@ -36,8 +36,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 关键词映射管理控制器
- */
-@RestController
+ * <p>
+ * 面向后台管理端，用于维护查询术语归一化规则。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@RestController
 @RequiredArgsConstructor
 public class QueryTermMappingController {
 

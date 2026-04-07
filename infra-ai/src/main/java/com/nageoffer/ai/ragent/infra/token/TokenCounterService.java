@@ -19,8 +19,10 @@ package com.nageoffer.ai.ragent.infra.token;
 
 /**
  * Token 统计服务接口
- */
-public interface TokenCounterService {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface TokenCounterService {
 
     /**
      * 统计文本的 Token 数

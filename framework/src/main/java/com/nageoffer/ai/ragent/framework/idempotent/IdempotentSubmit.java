@@ -24,8 +24,10 @@ import java.lang.annotation.Target;
 
 /**
  * 幂等注解，防止用户重复提交表单信息
- */
-@Target(ElementType.METHOD)
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface IdempotentSubmit {
 

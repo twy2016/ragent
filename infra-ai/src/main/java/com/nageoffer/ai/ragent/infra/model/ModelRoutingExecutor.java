@@ -30,8 +30,10 @@ import java.util.function.Function;
 /**
  * 模型路由执行器
  * 负责在多个模型候选者之间进行调度执行，并提供故障转移（Fallback）和健康检查机制
- */
-@Slf4j
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ModelRoutingExecutor {

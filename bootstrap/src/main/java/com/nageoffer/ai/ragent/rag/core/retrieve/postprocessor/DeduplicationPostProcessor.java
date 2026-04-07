@@ -34,8 +34,12 @@ import java.util.Map;
  * <p>
  * 合并多个通道的结果并去重
  * 当同一个 Chunk 在多个通道中出现时，保留分数最高的
- */
-@Slf4j
+ * <p>
+ * 这是后处理链中最早执行的一步，先去重可以减少后续重排模型的输入规模。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Component
 public class DeduplicationPostProcessor implements SearchResultPostProcessor {
 

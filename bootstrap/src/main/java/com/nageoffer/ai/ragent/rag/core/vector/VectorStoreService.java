@@ -23,8 +23,12 @@ import java.util.List;
 
 /**
  * 向量存储服务接口
- */
-public interface VectorStoreService {
+ * <p>
+ * 面向“索引写入”场景，负责把切片及其 embedding 持久化到具体向量引擎中。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface VectorStoreService {
 
     /**
      * 批量建立文档的向量索引

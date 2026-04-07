@@ -21,8 +21,10 @@ import java.util.Map;
 
 /**
  * 提示词模板渲染器
- */
-public final class PromptTemplateRenderer {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public final class PromptTemplateRenderer {
 
     private PromptTemplateRenderer() {
     }

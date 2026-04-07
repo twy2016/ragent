@@ -38,8 +38,12 @@ import java.util.List;
 
 /**
  * 示例问题控制器（欢迎页展示）
- */
-@RestController
+ * <p>
+ * 同时提供前台随机推荐接口和后台维护接口。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@RestController
 @RequiredArgsConstructor
 public class SampleQuestionController {
 

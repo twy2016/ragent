@@ -25,8 +25,10 @@ import java.util.Map;
  * <p>
  * 提供文档解析的通用能力，支持多种文档格式（PDF、Word、Markdown 等）
  * 可用于知识库导入、RAG 检索等场景
- */
-public interface DocumentParser {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface DocumentParser {
 
     /**
      * 获取解析器类型标识

@@ -24,14 +24,30 @@ import java.util.Date;
 
 /**
  * RAG Trace 记录服务
- */
-public interface RagTraceRecordService {
+ * <p>
+ * 面向切面层提供 run/node 生命周期持久化能力，不承载额外业务判断。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface RagTraceRecordService {
 
+    /**
+     * 记录一条 trace 根运行开始事件。
+     */
     void startRun(RagTraceRunDO run);
 
+    /**
+     * 记录一条 trace 根运行结束事件。
+     */
     void finishRun(String traceId, String status, String errorMessage, Date endTime, long durationMs);
 
+    /**
+     * 记录一个 trace 节点开始事件。
+     */
     void startNode(RagTraceNodeDO node);
 
+    /**
+     * 记录一个 trace 节点结束事件。
+     */
     void finishNode(String traceId, String nodeId, String status, String errorMessage, Date endTime, long durationMs);
 }

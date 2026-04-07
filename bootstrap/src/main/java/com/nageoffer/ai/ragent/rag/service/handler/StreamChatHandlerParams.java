@@ -27,8 +27,12 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 /**
  * StreamChatEventHandler 构建参数
  * 使用参数对象模式，将多个参数封装成一个对象
- */
-@Getter
+ * <p>
+ * 这样可以降低回调处理器构造器参数数量，避免随着依赖增加导致签名持续膨胀。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Getter
 @Builder
 public class StreamChatHandlerParams {
 

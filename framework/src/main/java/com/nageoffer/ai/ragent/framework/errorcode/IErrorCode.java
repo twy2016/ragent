@@ -20,8 +20,10 @@ package com.nageoffer.ai.ragent.framework.errorcode;
 /**
  * 平台错误码
  * 定义错误码抽象接口，由各错误码类实现接口方法
- */
-public interface IErrorCode {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface IErrorCode {
 
     /**
      * 错误码

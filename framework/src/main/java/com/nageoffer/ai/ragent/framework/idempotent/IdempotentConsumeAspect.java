@@ -34,8 +34,10 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 防止消息队列消费者重复消费消息切面控制器
- */
-@Slf4j
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Aspect
 @Component
 @RequiredArgsConstructor

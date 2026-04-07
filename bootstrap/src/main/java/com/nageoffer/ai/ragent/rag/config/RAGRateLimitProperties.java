@@ -23,8 +23,12 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * RAG 全局并发限流配置
- */
-@Data
+ * <p>
+ * 控制流式对话在全局维度上的最大并发数、排队等待时长和 permit 续租兜底参数。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Configuration
 public class RAGRateLimitProperties {
 

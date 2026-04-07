@@ -40,7 +40,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-@Service
+/**
+ * 会话消息服务实现。
+ * <p>
+ * 负责消息明细读写、消息列表查询以及摘要记录落库，并在查询阶段补充用户反馈信息。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Service
 @RequiredArgsConstructor
 public class ConversationMessageServiceImpl implements ConversationMessageService {
 
@@ -51,6 +58,7 @@ public class ConversationMessageServiceImpl implements ConversationMessageServic
 
     @Override
     public String addMessage(ConversationMessageBO conversationMessage) {
+        // BO -> DO 后直接写入消息表，返回主键给上游继续引用。
         ConversationMessageDO messageDO = BeanUtil.toBean(conversationMessage, ConversationMessageDO.class);
         conversationMessageMapper.insert(messageDO);
         return messageDO.getId();
@@ -62,6 +70,7 @@ public class ConversationMessageServiceImpl implements ConversationMessageServic
             return List.of();
         }
 
+        // 先校验会话归属，避免越权读取其他用户的消息记录。
         ConversationDO conversation = conversationMapper.selectOne(
                 Wrappers.lambdaQuery(ConversationDO.class)
                         .eq(ConversationDO::getConversationId, conversationId)
@@ -73,6 +82,7 @@ public class ConversationMessageServiceImpl implements ConversationMessageServic
         }
 
         boolean asc = order == null || order == ConversationMessageOrder.ASC;
+        // 数据库层支持升降序；最终会统一整理成更适合前端消费的顺序。
         List<ConversationMessageDO> records = conversationMessageMapper.selectList(
                 Wrappers.lambdaQuery(ConversationMessageDO.class)
                         .eq(ConversationMessageDO::getConversationId, conversationId)
@@ -89,6 +99,7 @@ public class ConversationMessageServiceImpl implements ConversationMessageServic
             Collections.reverse(records);
         }
 
+        // 只对 assistant 消息查询反馈信息，因为 user 消息没有点赞/点踩语义。
         List<String> assistantMessageIds = records.stream()
                 .filter(record -> "assistant".equalsIgnoreCase(record.getRole()))
                 .map(ConversationMessageDO::getId)
@@ -113,6 +124,7 @@ public class ConversationMessageServiceImpl implements ConversationMessageServic
 
     @Override
     public void addMessageSummary(ConversationSummaryBO conversationSummary) {
+        // 摘要单独落表，便于后续按覆盖区间做增量更新。
         ConversationSummaryDO conversationSummaryDO = BeanUtil.toBean(conversationSummary, ConversationSummaryDO.class);
         conversationSummaryMapper.insert(conversationSummaryDO);
     }

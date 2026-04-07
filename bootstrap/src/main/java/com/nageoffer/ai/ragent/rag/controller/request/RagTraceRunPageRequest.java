@@ -22,8 +22,12 @@ import lombok.Data;
 
 /**
  * RAG Trace 运行记录分页请求
- */
-@Data
+ * <p>
+ * 用于观测页面按 traceId、conversationId、taskId 或状态筛选链路记录。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 public class RagTraceRunPageRequest extends Page {
 
     private String traceId;

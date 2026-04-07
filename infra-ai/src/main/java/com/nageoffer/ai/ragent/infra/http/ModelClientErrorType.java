@@ -22,8 +22,10 @@ package com.nageoffer.ai.ragent.infra.http;
  * <p>
  * 定义了与AI模型服务交互过程中可能遇到的各种错误类型，
  * 用于统一错误分类和处理策略
- */
-public enum ModelClientErrorType {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public enum ModelClientErrorType {
 
     /**
      * 未授权错误 - 认证失败或令牌无效

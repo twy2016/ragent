@@ -24,8 +24,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * StreamCancellationHandle 工具类
  * 用于构建常见的取消句柄，统一幂等取消语义
- */
-public final class StreamCancellationHandles {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public final class StreamCancellationHandles {
 
     private static final StreamCancellationHandle NOOP = () -> {
     };

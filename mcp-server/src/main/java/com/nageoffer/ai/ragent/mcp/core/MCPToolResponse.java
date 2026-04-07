@@ -29,8 +29,10 @@ import java.util.Map;
  * MCP 工具调用响应
  * <p>
  * 由执行器返回，随后由协议层转换为 MCP 标准响应结构
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

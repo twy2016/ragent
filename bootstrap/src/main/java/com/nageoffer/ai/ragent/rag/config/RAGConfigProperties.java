@@ -35,8 +35,12 @@ import org.springframework.context.annotation.Configuration;
  *   query-rewrite:
  *     enabled: true
  * </pre>
- */
-@Data
+ * <p>
+ * 目前主要承载查询改写链路相关开关和上下文约束参数。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Configuration
 public class RAGConfigProperties {
 

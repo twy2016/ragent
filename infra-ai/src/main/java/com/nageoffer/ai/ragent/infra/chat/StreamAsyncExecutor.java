@@ -30,6 +30,8 @@ import java.util.function.Consumer;
 /**
  * 流式任务异步执行器
  * 统一处理线程池提交、拒绝兜底和取消句柄构建逻辑
+ * <p>
+ * 主要用于把底层流式网络读取任务切到独立线程池执行，并统一处理线程池繁忙时的降级行为。
  */
 final class StreamAsyncExecutor {
 

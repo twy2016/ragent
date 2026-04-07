@@ -24,6 +24,13 @@ import com.nageoffer.ai.ragent.rag.controller.vo.IntentNodeTreeVO;
 import com.nageoffer.ai.ragent.rag.controller.request.IntentNodeUpdateRequest;
 
 import java.util.List;
+/**
+ * 
+IntentTreeService
+。
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */
 
 public interface IntentTreeService extends IService<IntentNodeDO> {
 

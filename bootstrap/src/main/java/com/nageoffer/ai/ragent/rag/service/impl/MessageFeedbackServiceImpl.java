@@ -41,7 +41,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Service
+/**
+ * 消息反馈服务实现。
+ * <p>
+ * 负责校验用户对 assistant 消息的反馈请求，并支持同步写库和 MQ 异步持久化两种路径。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Service
 @RequiredArgsConstructor
 public class MessageFeedbackServiceImpl implements MessageFeedbackService {
 
@@ -62,6 +69,7 @@ public class MessageFeedbackServiceImpl implements MessageFeedbackService {
         Assert.notNull(vote, () -> new ClientException("反馈值不能为空"));
         Assert.isTrue(vote == 1 || vote == -1, () -> new ClientException("反馈值必须为 1 或 -1"));
 
+        // 异步模式下先构造事件，由 MQ 消费端最终落库。
         MessageFeedbackEvent event = MessageFeedbackEvent.builder()
                 .messageId(messageId)
                 .userId(userId)
@@ -84,6 +92,7 @@ public class MessageFeedbackServiceImpl implements MessageFeedbackService {
         Assert.notNull(vote, () -> new ClientException("反馈值不能为空"));
         Assert.isTrue(vote == 1 || vote == -1, () -> new ClientException("反馈值必须为 1 或 -1"));
 
+        // 同步模式下直接校验消息归属并写库。
         ConversationMessageDO message = loadAssistantMessage(messageId, userId);
         doUpsertFeedback(messageId, userId, message.getConversationId(),
                 vote, request.getReason(), request.getComment(), System.currentTimeMillis());

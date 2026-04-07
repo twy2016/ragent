@@ -21,8 +21,12 @@ import java.util.Map;
 
 /**
  * MCP 参数提取器接口
- */
-public interface MCPParameterExtractor {
+ * <p>
+ * 它位于“命中工具意图”与“真正执行工具调用”之间，负责把自然语言表达转换成结构化参数。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface MCPParameterExtractor {
 
     /**
      * 从用户问题中提取 MCP 工具所需的参数
@@ -35,6 +39,8 @@ public interface MCPParameterExtractor {
 
     /**
      * 从用户问题中提取 MCP 工具所需的参数（支持自定义提示词）
+     * <p>
+     * 自定义提示词通常由具体意图节点提供，用于增强某类工具在特定业务语境下的抽取效果。
      *
      * @param userQuestion         用户原始问题
      * @param tool                 MCP 工具定义（包含参数定义）

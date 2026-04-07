@@ -25,6 +25,8 @@ import com.google.gson.JsonObject;
 /**
  * OpenAI 协议风格 SSE 解析器
  * 支持从 delta/message 中提取 content，以及可选的 reasoning_content
+ * <p>
+ * 主要服务于兼容 OpenAI 风格流式返回格式的聊天客户端实现。
  */
 final class OpenAIStyleSseParser {
 

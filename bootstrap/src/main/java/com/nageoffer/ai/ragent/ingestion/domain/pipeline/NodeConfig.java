@@ -26,8 +26,10 @@ import lombok.NoArgsConstructor;
 /**
  * 管道节点配置实体类
  * 定义摄取管道中单个节点的配置信息，包括节点标识、类型、设置参数以及执行条件等
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

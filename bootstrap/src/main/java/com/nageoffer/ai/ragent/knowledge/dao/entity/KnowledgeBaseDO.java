@@ -32,8 +32,10 @@ import java.util.Date;
 
 /**
  * 知识库实体
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

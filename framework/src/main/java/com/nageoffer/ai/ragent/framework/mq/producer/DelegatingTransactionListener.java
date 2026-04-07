@@ -33,8 +33,10 @@ import java.util.function.Consumer;
 
 /**
  * 通用的 RocketMQ 事务消息监听器
- */
-@Slf4j
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @RocketMQTransactionListener
 public class DelegatingTransactionListener implements RocketMQLocalTransactionListener {
 

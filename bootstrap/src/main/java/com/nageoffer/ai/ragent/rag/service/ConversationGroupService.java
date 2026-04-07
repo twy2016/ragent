@@ -27,8 +27,12 @@ import java.util.List;
 /**
  * 对话组服务接口
  * 提供对话消息、摘要和对话信息的查询功能
- */
-public interface ConversationGroupService {
+ * <p>
+ * 这类聚合查询能力会被摘要压缩、会话展示和流式回调等多个模块共同复用。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface ConversationGroupService {
 
     /**
      * 获取指定对话中最新的用户消息列表

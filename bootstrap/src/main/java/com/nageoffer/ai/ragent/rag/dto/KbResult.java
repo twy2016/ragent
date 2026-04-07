@@ -27,8 +27,12 @@ import java.util.Map;
  *
  * @param groupedContext 分组后的上下文文本
  * @param intentChunks   意图 ID -> 分片列表
- */
-public record KbResult(String groupedContext, Map<String, List<RetrievedChunk>> intentChunks) {
+ * <p>
+ * 同时保留“给模型看的文本上下文”和“给程序继续规划 Prompt 用的结构化 chunk 分组”。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public record KbResult(String groupedContext, Map<String, List<RetrievedChunk>> intentChunks) {
     /**
      * 空结果
      */

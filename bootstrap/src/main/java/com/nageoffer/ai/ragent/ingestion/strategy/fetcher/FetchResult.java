@@ -23,6 +23,8 @@ package com.nageoffer.ai.ragent.ingestion.strategy.fetcher;
  * @param content  抓取到的内容字节数组
  * @param mimeType 内容的 MIME 类型
  * @param fileName 文件名称
- */
-public record FetchResult(byte[] content, String mimeType, String fileName) {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public record FetchResult(byte[] content, String mimeType, String fileName) {
 }

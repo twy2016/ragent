@@ -44,8 +44,12 @@ import java.util.stream.Collectors;
 
 /**
  * RAG Trace 查询服务实现
- */
-@Service
+ * <p>
+ * 负责把底层 trace 记录转换为更适合控制器和前端展示的分页与详情视图对象。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Service
 @RequiredArgsConstructor
 public class RagTraceQueryServiceImpl implements RagTraceQueryService {
 
@@ -55,6 +59,7 @@ public class RagTraceQueryServiceImpl implements RagTraceQueryService {
 
     @Override
     public IPage<RagTraceRunVO> pageRuns(RagTraceRunPageRequest request) {
+        // 分页查询阶段只拼装过滤条件；用户名等展示字段在查询结果出来后统一补齐。
         LambdaQueryWrapper<RagTraceRunDO> wrapper = Wrappers.lambdaQuery(RagTraceRunDO.class)
                 .orderByDesc(RagTraceRunDO::getStartTime);
 
@@ -78,6 +83,7 @@ public class RagTraceQueryServiceImpl implements RagTraceQueryService {
 
     @Override
     public RagTraceDetailVO detail(String traceId) {
+        // 详情由“根运行记录 + 节点列表”两部分组成，便于前端按树形或时间线渲染。
         RagTraceRunDO run = runMapper.selectOne(Wrappers.lambdaQuery(RagTraceRunDO.class)
                 .eq(RagTraceRunDO::getTraceId, traceId)
                 .last("limit 1"));
@@ -93,6 +99,7 @@ public class RagTraceQueryServiceImpl implements RagTraceQueryService {
 
     @Override
     public List<RagTraceNodeVO> listNodes(String traceId) {
+        // 节点按开始时间和自增 ID 排序，尽量还原真实执行顺序。
         List<RagTraceNodeDO> nodes = nodeMapper.selectList(Wrappers.lambdaQuery(RagTraceNodeDO.class)
                 .eq(RagTraceNodeDO::getTraceId, traceId)
                 .orderByAsc(RagTraceNodeDO::getStartTime)
@@ -131,6 +138,7 @@ public class RagTraceQueryServiceImpl implements RagTraceQueryService {
             return Collections.emptyMap();
         }
 
+        // 批量查询用户名，避免分页结果里逐条查用户导致 N+1 问题。
         List<UserDO> users = userMapper.selectList(Wrappers.lambdaQuery(UserDO.class)
                 .in(UserDO::getId, userIds)
                 .select(UserDO::getId, UserDO::getUsername));
@@ -153,6 +161,7 @@ public class RagTraceQueryServiceImpl implements RagTraceQueryService {
     }
 
     private RagTraceNodeVO toNodeVO(RagTraceNodeDO node) {
+        // 保留 parentNodeId 和 depth，方便前端自行组装节点树。
         return RagTraceNodeVO.builder()
                 .traceId(node.getTraceId())
                 .nodeId(node.getNodeId())

@@ -34,8 +34,10 @@ import java.util.Optional;
  * MCP JSON-RPC 方法分发器
  * <p>
  * 处理 initialize、tools/list、tools/call 三个核心方法
- */
-@Slf4j
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Component
 @RequiredArgsConstructor
 public class MCPDispatcher {

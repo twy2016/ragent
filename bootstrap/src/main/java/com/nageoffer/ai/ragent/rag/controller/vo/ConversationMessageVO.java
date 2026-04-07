@@ -26,8 +26,12 @@ import java.util.Date;
 
 /**
  * 会话消息视图对象
- */
-@Data
+ * <p>
+ * 面向前端返回会话消息列表时使用，包含消息本身以及当前用户的反馈状态。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

@@ -25,8 +25,10 @@ import java.util.Optional;
 
 /**
  * 抽象项目中三类异常体系，客户端异常、服务端异常以及远程服务调用异常
- */
-@Getter
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Getter
 public abstract class AbstractException extends RuntimeException {
 
     public final String errorCode;

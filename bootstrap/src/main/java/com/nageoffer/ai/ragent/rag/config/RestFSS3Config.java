@@ -32,8 +32,12 @@ import java.net.URI;
 /**
  * RustFS S3 客户端配置类
  * 用于配置和初始化与 RustFS 对象存储服务交互的 S3 客户端
- */
-@Configuration
+ * <p>
+ * 同时提供普通 S3Client 与 S3Presigner，分别服务于可靠上传和预签名流式上传两类场景。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Configuration
 public class RestFSS3Config {
 
     @Bean

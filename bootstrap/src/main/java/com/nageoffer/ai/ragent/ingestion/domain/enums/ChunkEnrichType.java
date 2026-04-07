@@ -26,8 +26,10 @@ import lombok.RequiredArgsConstructor;
  * 文本块富集类型枚举
  * 定义对文档分块进行富集处理的类型，用于增强分块的元数据和检索能力
  * 类型值使用小写 snake_case，如 keywords、summary
- */
-@Getter
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Getter
 @RequiredArgsConstructor
 public enum ChunkEnrichType {
 

@@ -24,8 +24,12 @@ import java.util.List;
 
 /**
  * RAG Trace 详情
- */
-@Data
+ * <p>
+ * 同时承载 trace 根记录和节点明细，便于前端一次性渲染完整链路。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Builder
 public class RagTraceDetailVO {
 

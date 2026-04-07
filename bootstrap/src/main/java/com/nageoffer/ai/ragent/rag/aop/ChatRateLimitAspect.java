@@ -39,8 +39,13 @@ import java.util.Date;
 
 /**
  * SSE 全局限流切面，避免业务代码侵入
- */
-@Slf4j
+ * <p>
+ * 这里负责把流式对话入口包装成“可排队执行”的任务，并在真正执行时统一补齐 trace、
+ * 记录运行状态和收敛异常处理。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Aspect
 @Component
 @RequiredArgsConstructor
@@ -57,30 +62,38 @@ public class ChatRateLimitAspect {
     @Around("@annotation(com.nageoffer.ai.ragent.rag.aop.ChatRateLimit)")
     public Object limitStreamChat(ProceedingJoinPoint joinPoint) throws Throwable {
         Object[] args = joinPoint.getArgs();
+        // 当前切面只处理约定签名的 SSE 方法；不匹配时直接放行。
         if (args == null || args.length < 4 || !(args[3] instanceof SseEmitter emitter)) {
             return joinPoint.proceed();
         }
 
         String question = args[0] instanceof String q ? q : "";
         String conversationId = args[1] instanceof String cid ? cid : null;
+        // 统一补齐 conversationId，并回写到参数中，保证排队和真正执行看到的是同一个会话 ID。
         String actualConversationId = StrUtil.isBlank(conversationId) ? IdUtil.getSnowflakeNextIdStr() : conversationId;
         args[1] = actualConversationId;
         Object target = joinPoint.getTarget();
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
 
+        // 这里只是把真正执行逻辑注册为回调；invokeWithTrace 不会在这里立即执行。
         chatQueueLimiter.enqueue(question, actualConversationId, emitter, () -> {
             invokeWithTrace(method, target, args, question, actualConversationId, emitter);
         });
+        // 实际返回内容由后续异步 SSE 过程写出，这里无需同步返回业务结果。
         return null;
     }
 
+    /**
+     * 在真正进入业务方法前补齐 trace，上报运行状态，并将异常统一转成 SSE 错误结束。
+     */
     private void invokeWithTrace(Method method,
                                  Object target,
                                  Object[] args,
                                  String question,
                                  String conversationId,
                                  SseEmitter emitter) {
+        // 未开启 trace 时仅保留统一异常处理，避免引入额外记录开销。
         if (!ragTraceProperties.isEnabled()) {
             invokeTarget(method, target, args, emitter);
             return;
@@ -104,6 +117,7 @@ public class ChatRateLimitAspect {
         RagTraceContext.setTraceId(traceId);
         RagTraceContext.setTaskId(taskId);
         try {
+            // 通过反射调用原始目标方法，此时才真正进入控制器/业务实现。
             method.invoke(target, args);
             traceRecordService.finishRun(
                     traceId,
@@ -128,6 +142,9 @@ public class ChatRateLimitAspect {
         }
     }
 
+    /**
+     * 不记录 trace 的直接调用路径，仅负责统一异常兜底。
+     */
     private void invokeTarget(Method method, Object target, Object[] args, SseEmitter emitter) {
         try {
             method.invoke(target, args);

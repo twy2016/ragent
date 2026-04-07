@@ -25,8 +25,10 @@ import java.util.Map;
  *
  * @see FixedSizeOptions 固定大小切分配置
  * @see TextBoundaryOptions 文本边界切分配置（结构感知等）
- */
-public sealed interface ChunkingOptions permits FixedSizeOptions, TextBoundaryOptions {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public sealed interface ChunkingOptions permits FixedSizeOptions, TextBoundaryOptions {
 
     /**
      * 将配置导出为 Map，用于 API 返回和配置校验

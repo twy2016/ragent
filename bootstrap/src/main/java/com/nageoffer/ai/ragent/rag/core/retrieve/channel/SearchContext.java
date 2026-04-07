@@ -29,8 +29,12 @@ import java.util.Map;
  * 检索上下文
  * <p>
  * 携带检索所需的所有信息，在多个通道之间传递
- */
-@Data
+ * <p>
+ * 它相当于多通道检索阶段的统一请求对象，避免各通道各自拼装上下文。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Builder
 public class SearchContext {
 
@@ -67,6 +71,8 @@ public class SearchContext {
 
     /**
      * 获取主问题（优先使用重写后的问题）
+     * <p>
+     * 通道实现一般直接使用主问题，而不关心它来自原问题还是改写结果。
      */
     public String getMainQuestion() {
         return rewrittenQuestion != null ? rewrittenQuestion : originalQuestion;

@@ -30,8 +30,10 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 认证控制器
  * 处理用户登录和登出相关的请求
- */
-@RestController
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@RestController
 @RequiredArgsConstructor
 public class AuthController {
 

@@ -24,8 +24,10 @@ import com.nageoffer.ai.ragent.infra.model.ModelTarget;
 /**
  * 聊天客户端接口
  * 定义了与AI模型进行对话的核心方法
- */
-public interface ChatClient {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface ChatClient {
 
     /**
      * 获取服务提供商名称

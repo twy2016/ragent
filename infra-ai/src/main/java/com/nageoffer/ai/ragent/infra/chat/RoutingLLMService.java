@@ -46,8 +46,10 @@ import java.util.stream.Collectors;
  * 2. 支持多模型候选的自动降级和故障转移
  * 3. 维护模型健康状态，优化路由策略
  * 4. 支持同步和流式两种调用方式
- */
-@Slf4j
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Service
 @Primary
 public class RoutingLLMService implements LLMService {

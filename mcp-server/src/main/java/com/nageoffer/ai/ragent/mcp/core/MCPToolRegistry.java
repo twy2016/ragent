@@ -24,8 +24,10 @@ import java.util.Optional;
  * MCP 工具注册表接口
  * <p>
  * 管理服务端已注册的工具执行器，并提供按 toolId 查询能力
- */
-public interface MCPToolRegistry {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface MCPToolRegistry {
 
     /**
      * 注册工具执行器

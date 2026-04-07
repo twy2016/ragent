@@ -28,8 +28,10 @@ import java.util.List;
 
 /**
  * 知识库分片服务接口
- */
-public interface KnowledgeChunkService {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface KnowledgeChunkService {
 
     /**
      * 分页查询指定文档的分片列表

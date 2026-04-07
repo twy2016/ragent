@@ -38,8 +38,10 @@ import java.util.List;
  * 1) 归一化：修复 URL 内“被换行拆开”的情况，但避免误吞段落换行/列表换行
  * 2) 英文 '.' 不再无条件当边界，避免切烂 URL 域名
  * 3) 边界回退距离 <= overlap（避免出现 chunk 几乎全重复）
- */
-@Component
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 public class FixedSizeTextChunker implements ChunkingStrategy {
 
     @Override

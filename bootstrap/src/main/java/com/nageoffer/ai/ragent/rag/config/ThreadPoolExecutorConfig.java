@@ -31,8 +31,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * 线程池执行器配置类
  * 为系统中不同的业务场景配置独立的线程池，提高并发处理能力
- */
-@Configuration
+ * <p>
+ * 通过拆分不同用途的线程池，可以减少检索、模型流式输出、摘要生成等任务之间的相互干扰。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Configuration
 public class ThreadPoolExecutorConfig {
 
     /**

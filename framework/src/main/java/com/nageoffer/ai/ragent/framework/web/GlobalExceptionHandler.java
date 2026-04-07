@@ -41,8 +41,10 @@ import java.util.Optional;
 /**
  * 全局异常处理器
  * 拦截指定异常并通过优雅构建方式返回前端信息
- */
-@Slf4j
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

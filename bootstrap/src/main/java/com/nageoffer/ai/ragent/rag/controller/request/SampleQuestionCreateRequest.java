@@ -21,8 +21,12 @@ import lombok.Data;
 
 /**
  * 示例问题创建请求
- */
-@Data
+ * <p>
+ * 用于后台维护首页或欢迎页展示的推荐问题。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 public class SampleQuestionCreateRequest {
 
     /**

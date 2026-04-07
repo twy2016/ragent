@@ -26,6 +26,10 @@ import com.nageoffer.ai.ragent.rag.core.intent.NodeScore;
  *
  * @param mcpIntents MCP 意图列表
  * @param kbIntents  KB 意图列表
- */
-public record IntentGroup(List<NodeScore> mcpIntents, List<NodeScore> kbIntents) {
+ * <p>
+ * 用于把混合意图拆成两个维度，分别服务于工具调用和知识库检索。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public record IntentGroup(List<NodeScore> mcpIntents, List<NodeScore> kbIntents) {
 }

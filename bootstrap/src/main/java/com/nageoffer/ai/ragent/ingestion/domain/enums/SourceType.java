@@ -26,8 +26,10 @@ import lombok.RequiredArgsConstructor;
  * 文档源类型枚举
  * 定义支持的文档来源类型，用于标识文档的获取方式
  * 类型值使用小写 snake_case，如 file、url、feishu、s3
- */
-@Getter
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Getter
 @RequiredArgsConstructor
 public enum SourceType {
 

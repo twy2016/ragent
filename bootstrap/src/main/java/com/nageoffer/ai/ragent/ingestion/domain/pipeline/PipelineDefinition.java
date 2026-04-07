@@ -27,8 +27,10 @@ import java.util.List;
 /**
  * 摄取管道定义实体类
  * 定义一个完整的文档摄取管道，包含管道的基本信息和节点配置列表
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

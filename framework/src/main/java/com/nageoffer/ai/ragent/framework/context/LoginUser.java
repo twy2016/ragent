@@ -24,8 +24,10 @@ import lombok.NoArgsConstructor;
 
 /**
  * 当前登录用户的上下文快照
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

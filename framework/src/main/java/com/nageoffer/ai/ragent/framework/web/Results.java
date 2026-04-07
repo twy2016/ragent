@@ -25,8 +25,10 @@ import java.util.Optional;
 
 /**
  * 构建全局返回对象构造器，方便开发者构建全局返回对象
- */
-public final class Results {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public final class Results {
 
     /**
      * 构造成功响应

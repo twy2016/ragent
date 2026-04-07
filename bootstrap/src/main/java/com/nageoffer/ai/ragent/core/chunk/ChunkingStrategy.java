@@ -22,8 +22,10 @@ import java.util.List;
 /**
  * 文本分块器核心接口
  * 定义统一的文本分块能力
- */
-public interface ChunkingStrategy {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface ChunkingStrategy {
 
     /**
      * 获取分块器类型标识

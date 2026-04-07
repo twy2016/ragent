@@ -33,8 +33,10 @@ import java.util.Objects;
 /**
  * 条件评估器
  * 用于根据给定的 IngestionContext 上下文和 JsonNode 格式的条件配置来评估条件是否满足
- */
-@Component
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 public class ConditionEvaluator {
 
     private final ObjectMapper objectMapper;

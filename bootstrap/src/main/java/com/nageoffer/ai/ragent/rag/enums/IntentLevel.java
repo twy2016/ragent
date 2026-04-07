@@ -23,8 +23,10 @@ import lombok.RequiredArgsConstructor;
 /**
  * 意图层级枚举
  * 用于表示知识库中意图的层级结构
- */
-@Getter
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Getter
 @RequiredArgsConstructor
 public enum IntentLevel {
 

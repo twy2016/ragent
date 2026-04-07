@@ -26,8 +26,10 @@ import lombok.NoArgsConstructor;
 /**
  * 分块器设置实体类
  * 定义文档分块节点的配置参数，包括分块策略、块大小、重叠大小等
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

@@ -29,8 +29,10 @@ package com.nageoffer.ai.ragent.framework.errorcode;
  * </ul>
  * 通过组件包统一定义基础错误码，避免各服务重复定义相同内容。
  * </p>
- */
-public enum BaseErrorCode implements IErrorCode {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public enum BaseErrorCode implements IErrorCode {
 
     // ========== A 类错误：用户端错误 ==========
 

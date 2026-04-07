@@ -32,8 +32,10 @@ import java.io.Serializable;
  * </p>
  *
  * @param <T> 响应数据的类型
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Accessors(chain = true)
 public class Result<T> implements Serializable {
 

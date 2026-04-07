@@ -21,8 +21,12 @@ import lombok.Data;
 
 /**
  * 关键词映射创建请求
- */
-@Data
+ * <p>
+ * 用于新增一条从用户说法到标准术语的归一化规则。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 public class QueryTermMappingCreateRequest {
 
     /**

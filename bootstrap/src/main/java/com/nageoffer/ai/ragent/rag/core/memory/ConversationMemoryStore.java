@@ -24,8 +24,12 @@ import java.util.List;
 /**
  * 对话记忆存储接口
  * 提供对话历史记录的加载、追加和缓存刷新功能
- */
-public interface ConversationMemoryStore {
+ * <p>
+ * 这是更靠近存储层的抽象，ConversationMemoryService 会在其之上叠加摘要和组合逻辑。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface ConversationMemoryStore {
 
     /**
      * 加载对话历史记录

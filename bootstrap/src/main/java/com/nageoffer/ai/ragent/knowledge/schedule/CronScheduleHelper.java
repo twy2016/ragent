@@ -27,8 +27,10 @@ import java.util.Date;
 
 /**
  * Cron 工具类
- */
-public final class CronScheduleHelper {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public final class CronScheduleHelper {
 
     private CronScheduleHelper() {
     }

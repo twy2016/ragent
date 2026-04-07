@@ -26,8 +26,10 @@ import java.util.Map;
 /**
  * 摄取任务创建请求对象
  * 用于接收创建新摄取任务的请求参数，包括管道ID、文档源信息及元数据。
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 public class IngestionTaskCreateRequest {
 
     /**

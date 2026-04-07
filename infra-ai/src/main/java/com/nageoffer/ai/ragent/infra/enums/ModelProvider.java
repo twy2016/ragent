@@ -23,8 +23,10 @@ import lombok.RequiredArgsConstructor;
 /**
  * 模型提供商枚举
  * 统一管理提供商名称，避免散落的字符串常量
- */
-@Getter
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Getter
 @RequiredArgsConstructor
 public enum ModelProvider {
 

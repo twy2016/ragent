@@ -24,8 +24,10 @@ import lombok.RequiredArgsConstructor;
  * 摄取节点类型枚举
  * 定义文档摄取流水线中支持的节点类型
  * 类型值使用小写 snake_case，如 fetcher、parser、chunker
- */
-@Getter
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Getter
 @RequiredArgsConstructor
 public enum IngestionNodeType {
 

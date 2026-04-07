@@ -16,6 +16,13 @@
  */
 
 package com.nageoffer.ai.ragent.rag.core.rewrite;
+/**
+ * 
+QueryTermMappingUtil
+。
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */
 
 public class QueryTermMappingUtil {
 
@@ -48,9 +55,7 @@ public class QueryTermMappingUtil {
 
             // 判断当前位置是否已经是 targetTerm 的开头
             boolean alreadyTarget =
-                    targetTerm != null
-                            && hit + targetLen <= len
-                            && text.startsWith(targetTerm, hit);
+                    hit + targetLen <= len && text.startsWith(targetTerm, hit);
 
             if (alreadyTarget) {
                 // 已经是目标词开头了，直接按原文拷贝 targetTerm，一次性跳过

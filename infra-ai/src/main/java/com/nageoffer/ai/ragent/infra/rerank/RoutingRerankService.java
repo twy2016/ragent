@@ -34,8 +34,10 @@ import java.util.stream.Collectors;
  * <p>
  * 该服务通过模型路由机制动态选择合适的重排客户端，并支持失败降级策略
  * 作为主要的重排服务实现，用于对检索到的文档块进行相关性重新排序
- */
-@Service
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Service
 @Primary
 public class RoutingRerankService implements RerankService {
 

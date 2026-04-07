@@ -24,8 +24,12 @@ import java.util.Date;
 
 /**
  * RAG Trace 节点明细
- */
-@Data
+ * <p>
+ * 对应链路中的一个方法级节点，包含层级、状态、耗时和异常信息。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Builder
 public class RagTraceNodeVO {
 

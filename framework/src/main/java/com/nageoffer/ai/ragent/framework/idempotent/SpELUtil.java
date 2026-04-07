@@ -31,8 +31,10 @@ import java.util.Optional;
 
 /**
  * SpEL 表达式解析工具
- */
-public final class SpELUtil {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public final class SpELUtil {
 
     private static final DefaultParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new DefaultParameterNameDiscoverer();
     private static final ExpressionParser EXPRESSION_PARSER = new SpelExpressionParser();

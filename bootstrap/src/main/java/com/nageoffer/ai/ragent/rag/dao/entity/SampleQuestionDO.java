@@ -32,8 +32,12 @@ import java.util.Date;
 
 /**
  * 示例问题实体（用于欢迎页展示）
- */
-@Data
+ * <p>
+ * 存储后台维护的推荐问题数据，供首页或欢迎页随机展示。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

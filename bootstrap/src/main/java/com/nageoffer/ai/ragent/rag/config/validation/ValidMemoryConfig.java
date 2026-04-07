@@ -29,6 +29,8 @@ import java.lang.annotation.Target;
 /**
  * 记忆配置校验注解
  * 用于校验摘要配置的合理性
+ * <p>
+ * 通过类级约束把多个字段之间的关联校验统一交给 MemoryConfigValidator 处理。
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)

@@ -25,6 +25,13 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+/**
+ * 
+JsonbTypeHandler
+。
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */
 
 public class JsonbTypeHandler extends BaseTypeHandler<String> {
 

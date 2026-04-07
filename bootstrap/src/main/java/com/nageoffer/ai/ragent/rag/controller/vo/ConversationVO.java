@@ -26,8 +26,12 @@ import java.util.Date;
 
 /**
  * 会话视图对象
- */
-@Data
+ * <p>
+ * 用于列表页展示会话标题、标识和最后活跃时间等摘要信息。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

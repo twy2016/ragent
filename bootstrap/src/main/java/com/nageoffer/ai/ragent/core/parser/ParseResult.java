@@ -24,8 +24,10 @@ import java.util.Map;
  *
  * @param text     解析后的文本内容
  * @param metadata 文档元数据（可选）
- */
-public record ParseResult(String text, Map<String, Object> metadata) {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public record ParseResult(String text, Map<String, Object> metadata) {
 
     /**
      * 创建只包含文本的解析结果

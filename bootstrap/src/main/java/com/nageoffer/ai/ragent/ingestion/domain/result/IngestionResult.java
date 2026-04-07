@@ -26,8 +26,10 @@ import lombok.NoArgsConstructor;
 /**
  * 摄取结果实体类
  * 表示文档摄取任务执行完成后的结果信息，包含任务状态、分块数量等概要数据
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

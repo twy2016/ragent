@@ -24,8 +24,10 @@ import okhttp3.MediaType;
 /**
  * HTTP 媒体类型常量类
  * 提供常用的 HTTP Content-Type 媒体类型定义
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HttpMediaTypes {
 
     /**

@@ -34,8 +34,10 @@ import java.util.Map;
 
 /**
  * HTTP 请求工具类，用于获取网络资源
- */
-@Component
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 @RequiredArgsConstructor
 public class HttpClientHelper {
 

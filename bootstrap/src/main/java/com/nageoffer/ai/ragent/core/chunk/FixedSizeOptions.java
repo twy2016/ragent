@@ -24,8 +24,10 @@ import java.util.Map;
  *
  * @param chunkSize   目标块大小（字符数）
  * @param overlapSize 相邻块重叠大小（字符数）
- */
-public record FixedSizeOptions(
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public record FixedSizeOptions(
         int chunkSize,
         int overlapSize
 ) implements ChunkingOptions {

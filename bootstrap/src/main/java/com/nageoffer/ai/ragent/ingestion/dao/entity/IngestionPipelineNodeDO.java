@@ -33,8 +33,10 @@ import java.util.Date;
 
 /**
  * 摄取流水线节点实体对象
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

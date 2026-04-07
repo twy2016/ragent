@@ -24,7 +24,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  *
  * @param messageId 消息ID（字符串，避免前端精度丢失）
  * @param title     会话标题（可选）
- */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+ * <p>
+ * 通常在 SSE 的 FINISH 事件中返回，告诉前端本次流式生成最终对应的消息标识和标题信息。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@JsonInclude(JsonInclude.Include.NON_NULL)
 public record CompletionPayload(String messageId, String title) {
 }

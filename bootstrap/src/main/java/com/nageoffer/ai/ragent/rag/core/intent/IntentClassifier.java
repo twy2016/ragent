@@ -27,8 +27,12 @@ import java.util.List;
  *     <li>串行分类：所有意图在单次 LLM 调用中完成识别（适用于意图数量较少场景）</li>
  *     <li>并行分类：按 Domain 拆分意图，并行调用多个 LLM 完成识别（适用于意图数量多场景）</li>
  * </ul>
- */
-public interface IntentClassifier {
+ * <p>
+ * 无论底层采用哪种分类策略，对上层都统一暴露“输入问题，输出候选意图打分列表”这一契约。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface IntentClassifier {
 
     /**
      * 对所有叶子分类节点做意图识别
@@ -40,6 +44,8 @@ public interface IntentClassifier {
 
     /**
      * 取前 topN 个且 score >= minScore 的分类
+     * <p>
+     * 适合只关心头部高置信度结果的调用方直接使用。
      *
      * @param question 用户问题
      * @param topN     最多返回 N 个结果

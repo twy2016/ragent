@@ -28,8 +28,10 @@ import java.util.Map;
 /**
  * 文档源实体类
  * 描述文档的来源信息，包括源类型、访问位置、文件名称以及访问凭证等
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

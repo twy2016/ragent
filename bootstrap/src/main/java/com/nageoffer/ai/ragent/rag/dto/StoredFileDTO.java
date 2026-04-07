@@ -22,7 +22,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
+/**
+ * 已存储文件信息。
+ * <p>
+ * 用于向上游返回文件上传后的访问地址、探测出的类型和原始文件元信息。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

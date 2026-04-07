@@ -29,8 +29,10 @@ import java.util.Map;
  * MCP 工具调用请求
  * <p>
  * 由协议层解析 tools/call 参数后构建，并传入具体执行器
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

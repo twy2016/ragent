@@ -28,13 +28,18 @@ import static com.nageoffer.ai.ragent.rag.enums.IntentLevel.TOPIC;
 
 /**
  * 构造意图识别树
- */
-public class IntentTreeFactory {
+ * <p>
+ * 当前实现通过硬编码方式构造一棵默认意图树，适合作为初始化样例或本地演示数据来源。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public class IntentTreeFactory {
 
     private static final String KB_ID_GROUP = "1997855927072321537";
     private static final String KB_ID_BIZ = "1997857139737882625";
 
     public static List<IntentNode> buildIntentTree() {
+        // roots 是整棵意图树的入口列表，后续会按领域、系统、MCP 能力等维度逐步挂载子节点。
         List<IntentNode> roots = new ArrayList<>();
 
         // ========== 1. 集团信息化 ==========

@@ -33,8 +33,12 @@ import java.util.List;
  * - Rerank
  * <p>
  * 处理器按照 order 顺序依次执行，形成处理链
- */
-public interface SearchResultPostProcessor {
+ * <p>
+ * 这一层适合放跨通道结果整理逻辑，而不适合放具体通道内部的检索细节。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface SearchResultPostProcessor {
 
     /**
      * 处理器名称

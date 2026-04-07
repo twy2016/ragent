@@ -27,8 +27,10 @@ import java.util.Map;
  * @param overlapChars 相邻块重叠大小（字符数）
  * @param maxChars     块的硬上限（字符数）
  * @param minChars     块的最小下限（字符数），小于此值会与后续块合并
- */
-public record TextBoundaryOptions(
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public record TextBoundaryOptions(
         int targetChars,
         int overlapChars,
         int maxChars,

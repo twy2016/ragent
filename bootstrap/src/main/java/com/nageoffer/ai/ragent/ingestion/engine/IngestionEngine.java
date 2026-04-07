@@ -35,8 +35,10 @@ import java.util.stream.Collectors;
 
 /**
  * 流水线执行引擎 - 基于节点连线的链式执行
- */
-@Slf4j
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Component
 public class IngestionEngine {
 

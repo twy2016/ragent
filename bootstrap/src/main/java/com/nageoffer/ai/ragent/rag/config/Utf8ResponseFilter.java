@@ -40,8 +40,12 @@ import java.io.IOException;
  * 标注 {@link Component} 后，Spring Boot 会自动将其注册为 Servlet Filter，
  * 对所有请求生效（除非另外配置 FilterRegistrationBean 进行路径/顺序控制）
  * </p>
- */
-@Component
+ * <p>
+ * 它是对 Spring MVC 消息转换器配置的一个额外兜底，确保低层响应对象也显式使用 UTF-8。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 public class Utf8ResponseFilter implements Filter {
 
     /**

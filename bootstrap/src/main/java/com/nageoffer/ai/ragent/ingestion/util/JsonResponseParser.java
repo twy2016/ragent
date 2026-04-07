@@ -31,8 +31,10 @@ import java.util.Map;
 
 /**
  * JSON 响应解析器，用于解析 LLM 返回的 JSON 字符串
- */
-public final class JsonResponseParser {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public final class JsonResponseParser {
 
     private static final Gson GSON = new Gson();
 

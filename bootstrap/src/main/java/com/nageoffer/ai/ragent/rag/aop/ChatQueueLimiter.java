@@ -62,8 +62,15 @@ import java.util.function.IntSupplier;
 
 /**
  * SSE 全局并发限流与排队处理
- */
-@Slf4j
+ * <p>
+ * 核心职责：
+ * 1. 通过 Redis 有序集合维护全局排队顺序；
+ * 2. 通过 Redis 可过期信号量控制全局并发数；
+ * 3. 在请求拿到执行资格后，将真正的业务入口投递到独立线程池执行。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ChatQueueLimiter {
@@ -108,7 +115,13 @@ public class ChatQueueLimiter {
         });
     }
 
+    /**
+     * 流式对话统一入口。
+     * <p>
+     * 开启全局限流时，请求会先入队，再按顺序竞争 permit；关闭时直接异步执行。
+     */
     public void enqueue(String question, String conversationId, SseEmitter emitter, Runnable onAcquire) {
+        // 即使关闭限流，仍然切到入口线程池，保持执行模型一致，避免占用 Web 请求线程。
         if (!Boolean.TRUE.equals(rateLimitProperties.getGlobalEnabled())) {
             chatEntryExecutor.execute(onAcquire);
             return;
@@ -120,6 +133,7 @@ public class ChatQueueLimiter {
         String requestId = IdUtil.getSnowflakeNextIdStr();
         RScoredSortedSet<String> queue = redissonClient.getScoredSortedSet(QUEUE_KEY, StringCodec.INSTANCE);
         long seq = nextQueueSeq();
+        // 所有请求先入队，后续严格按照递增序号竞争全局执行资格。
         queue.add(seq, requestId);
         Runnable releaseOnce = () -> {
             cancelled.set(true);
@@ -132,17 +146,23 @@ public class ChatQueueLimiter {
             }
         };
 
+        // SSE 连接结束后统一清理队列与 permit，避免出现孤儿排队项或许可证泄漏。
         emitter.onCompletion(releaseOnce);
         emitter.onTimeout(releaseOnce);
         emitter.onError(e -> releaseOnce.run());
 
+        // 已轮到当前请求且存在可用 permit 时，直接进入执行阶段。
         if (tryAcquireIfReady(queue, requestId, permitRef, cancelled, onAcquire)) {
             return;
         }
 
+        // 否则进入等待态，通过定时轮询 + 发布订阅通知尽快重试。
         scheduleQueuePoll(queue, requestId, permitRef, cancelled, question, conversationId, userId, emitter, onAcquire);
     }
 
+    /**
+     * 等待请求排到队头并获取 permit；超时后返回系统繁忙结果。
+     */
     private void scheduleQueuePoll(RScoredSortedSet<String> queue,
                                    String requestId,
                                    AtomicReference<String> permitRef,
@@ -173,6 +193,7 @@ public class ChatQueueLimiter {
                 }
                 cancelFuture(futureRef[0]);
                 if (!cancelled.get()) {
+                    // 超时后补记一条“被限流拒绝”的对话结果，并通过 SSE 告知前端。
                     RejectedContext rejectedContext = recordRejectedConversation(question, conversationId, userId);
                     sendRejectEvents(emitter, rejectedContext);
                 }
@@ -192,6 +213,9 @@ public class ChatQueueLimiter {
         }
     }
 
+    /**
+     * 仅当当前请求排到可执行位置且成功拿到 permit 时，才会触发真正的业务入口。
+     */
     private boolean tryAcquireIfReady(RScoredSortedSet<String> queue,
                                       String requestId,
                                       AtomicReference<String> permitRef,
@@ -204,10 +228,12 @@ public class ChatQueueLimiter {
         if (availablePermits <= 0) {
             return false;
         }
+        // 先用 Lua 原子判断“是否轮到当前请求”，避免多实例并发下重复抢占队头。
         ClaimResult claimResult = claimIfReady(queue, requestId, availablePermits);
         if (!claimResult.claimed) {
             return false;
         }
+        // 队列顺序校验通过后，再申请真正的执行许可证。
         String permitId = tryAcquirePermit();
         if (permitId == null) {
             long newSeq = nextQueueSeq();
@@ -222,6 +248,7 @@ public class ChatQueueLimiter {
         }
         publishQueueNotify();
         try {
+            // 真正的业务入口统一切到 chatEntryExecutor，避免阻塞当前轮询/通知线程。
             chatEntryExecutor.execute(() -> runOnAcquire(onAcquire));
         } catch (RuntimeException ex) {
             releasePermit(permitId, permitRef);
@@ -440,6 +467,11 @@ public class ChatQueueLimiter {
         }
     }
 
+    /**
+     * 基于发布订阅的轻量唤醒器。
+     * <p>
+     * 当 permit 被释放时，尽快触发排队请求重试，减少纯定时轮询带来的额外等待。
+     */
     private static final class PollNotifier {
         private final IntSupplier permitSupplier;
         private final ScheduledExecutorService notifyExecutor = new ScheduledThreadPoolExecutor(

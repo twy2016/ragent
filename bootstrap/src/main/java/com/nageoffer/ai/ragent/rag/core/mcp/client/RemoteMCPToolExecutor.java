@@ -27,8 +27,12 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 远程 MCP 工具执行器
  * 实现 MCPToolExecutor 接口，通过 MCPClient 远程调用 MCP Server 上的工具
- */
-@Slf4j
+ * <p>
+ * 它把“远程服务上的工具”适配成本地统一的 MCPToolExecutor 形态，便于注册到本地工具注册表中。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @RequiredArgsConstructor
 public class RemoteMCPToolExecutor implements MCPToolExecutor {
 
@@ -44,6 +48,7 @@ public class RemoteMCPToolExecutor implements MCPToolExecutor {
     public MCPResponse execute(MCPRequest request) {
         long start = System.currentTimeMillis();
         try {
+            // 远程执行成功时，统一包装成本地 MCPResponse，保持本地/远程工具调用语义一致。
             String result = mcpClient.callTool(toolDefinition.getToolId(), request.getParameters());
             long costMs = System.currentTimeMillis() - start;
 

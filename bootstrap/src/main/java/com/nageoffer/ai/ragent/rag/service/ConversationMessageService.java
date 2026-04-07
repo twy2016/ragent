@@ -24,7 +24,14 @@ import com.nageoffer.ai.ragent.rag.service.bo.ConversationSummaryBO;
 
 import java.util.List;
 
-public interface ConversationMessageService {
+/**
+ * 会话消息服务接口。
+ * <p>
+ * 负责消息明细与摘要记录的基础读写，并在消息查询阶段补充展示所需的附加信息。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface ConversationMessageService {
 
     /**
      * 新增对话消息

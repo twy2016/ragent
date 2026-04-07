@@ -40,8 +40,12 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * 基于 OkHttp 的 MCP 客户端实现
  * 使用 Streamable HTTP 传输协议（JSON-RPC 2.0）与远程 MCP Server 通信
- */
-@Slf4j
+ * <p>
+ * 它把 MCP 协议请求细节封装成普通 Java 调用，供远程工具执行器直接使用。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @RequiredArgsConstructor
 public class HttpMCPClient implements MCPClient {
 
@@ -195,6 +199,7 @@ public class HttpMCPClient implements MCPClient {
         if (result == null || !result.has("content") || !result.get("content").isJsonArray()) {
             return null;
         }
+        // MCP 工具可能返回多段 text 内容，这里统一拼成一个字符串提供给上层。
         JsonArray content = result.getAsJsonArray("content");
         List<String> textSegments = new ArrayList<>();
         for (JsonElement item : content) {

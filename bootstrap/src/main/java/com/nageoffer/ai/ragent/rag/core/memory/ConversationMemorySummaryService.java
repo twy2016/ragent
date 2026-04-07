@@ -19,11 +19,27 @@ package com.nageoffer.ai.ragent.rag.core.memory;
 
 import com.nageoffer.ai.ragent.framework.convention.ChatMessage;
 
-public interface ConversationMemorySummaryService {
+/**
+ * 对话记忆摘要服务接口。
+ * <p>
+ * 负责把较长的多轮对话压缩成摘要消息，并在读取上下文时按需包装成适合模型消费的 system 消息。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface ConversationMemorySummaryService {
 
+    /**
+     * 根据最新写入的消息判断是否需要触发摘要压缩。
+     */
     void compressIfNeeded(String conversationId, String userId, ChatMessage message);
 
+    /**
+     * 读取当前会话最新的一条摘要消息。
+     */
     ChatMessage loadLatestSummary(String conversationId, String userId);
 
+    /**
+     * 对摘要内容做统一装饰，便于直接注入模型上下文。
+     */
     ChatMessage decorateIfNeeded(ChatMessage summary);
 }

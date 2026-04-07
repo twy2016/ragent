@@ -40,7 +40,14 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
+/**
+ * 基于 Milvus 的向量写入实现。
+ * <p>
+ * 负责把切片内容、元数据和 embedding 写入 Milvus，并提供按文档或按 chunk 维度删除索引的能力。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "rag.vector.type", havingValue = "milvus", matchIfMissing = true)
@@ -58,6 +65,7 @@ public class MilvusVectorStoreService implements VectorStoreService {
         final int dim = ragDefaultProperties.getDimension();
         List<float[]> vectors = extractVectors(chunks, dim);
 
+        // 逐条把 VectorChunk 转换成 Milvus 插入所需的行结构。
         List<JsonObject> rows = new ArrayList<>(chunks.size());
         for (int i = 0; i < chunks.size(); i++) {
             VectorChunk chunk = chunks.get(i);

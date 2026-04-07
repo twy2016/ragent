@@ -25,8 +25,12 @@ import java.util.List;
 
 /**
  * MCP 客户端配置属性
- */
-@Data
+ * <p>
+ * 用于描述系统启动时需要连接的远程 MCP Server 列表。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @ConfigurationProperties(prefix = "rag.mcp")
 public class MCPClientProperties {
 
@@ -40,11 +44,15 @@ public class MCPClientProperties {
 
         /**
          * 服务名称
+         * <p>
+         * 主要用于日志与观测展示。
          */
         private String name;
 
         /**
          * 服务地址
+         * <p>
+         * 指向远程 MCP Server 的基础访问地址。
          */
         private String url;
     }

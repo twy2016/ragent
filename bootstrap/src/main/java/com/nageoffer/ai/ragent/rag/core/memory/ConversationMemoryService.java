@@ -24,8 +24,12 @@ import java.util.List;
 /**
  * 对话记忆服务接口
  * 负责管理和存储用户对话历史记录，提供对话上下文的加载、追加等功能
- */
-public interface ConversationMemoryService {
+ * <p>
+ * 它对上层屏蔽“摘要、历史、缓存、持久化”的组合细节，只暴露统一的会话上下文能力。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface ConversationMemoryService {
 
     /**
      * 加载对话历史记录
@@ -58,6 +62,7 @@ public interface ConversationMemoryService {
      * @return 包含追加前的历史记录
      */
     default List<ChatMessage> loadAndAppend(String conversationId, String userId, ChatMessage message) {
+        // 默认实现保持“先读后写”，确保返回值是追加前的上下文快照。
         List<ChatMessage> history = load(conversationId, userId);
         append(conversationId, userId, message);
         return history;

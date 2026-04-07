@@ -32,8 +32,10 @@ import java.util.Map;
  * <p>
  * 支持多种文档格式：PDF、Word、Excel、PPT、HTML、XML 等
  * 使用 Apache Tika 库进行文档解析和文本提取
- */
-@Slf4j
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Component
 public class TikaDocumentParser implements DocumentParser {
 

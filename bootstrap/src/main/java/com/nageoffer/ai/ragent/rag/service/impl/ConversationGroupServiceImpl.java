@@ -31,7 +31,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+/**
+ * 会话分组查询服务实现。
+ * <p>
+ * 主要封装按会话维度聚合查询消息、摘要和会话主记录的数据库访问逻辑，
+ * 供摘要压缩、会话展示和流式回调等多个模块复用。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Service
 @RequiredArgsConstructor
 public class ConversationGroupServiceImpl implements ConversationGroupService {
 
@@ -44,6 +52,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         if (StrUtil.isBlank(conversationId) || StrUtil.isBlank(userId) || limit <= 0) {
             return List.of();
         }
+        // 仅查询 user 消息，常用于计算轮次和确定摘要压缩边界。
         return messageMapper.selectList(
                 Wrappers.lambdaQuery(ConversationMessageDO.class)
                         .eq(ConversationMessageDO::getConversationId, conversationId)
@@ -60,6 +69,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         if (StrUtil.isBlank(conversationId) || StrUtil.isBlank(userId)) {
             return List.of();
         }
+        // 摘要场景下只关心原始 user/assistant 对话，不需要其他角色消息。
         var query = Wrappers.lambdaQuery(ConversationMessageDO.class)
                 .eq(ConversationMessageDO::getConversationId, conversationId)
                 .eq(ConversationMessageDO::getUserId, userId)
@@ -81,6 +91,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         if (StrUtil.isBlank(conversationId) || StrUtil.isBlank(userId) || at == null) {
             return null;
         }
+        // 通过时间点反查消息 ID，便于把摘要创建时间映射成摘要覆盖范围。
         ConversationMessageDO record = messageMapper.selectOne(
                 Wrappers.lambdaQuery(ConversationMessageDO.class)
                         .eq(ConversationMessageDO::getConversationId, conversationId)
@@ -98,6 +109,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         if (StrUtil.isBlank(conversationId) || StrUtil.isBlank(userId)) {
             return 0;
         }
+        // 摘要触发阈值按用户消息数统计，而不是总消息数。
         return messageMapper.selectCount(
                 Wrappers.lambdaQuery(ConversationMessageDO.class)
                         .eq(ConversationMessageDO::getConversationId, conversationId)
@@ -112,6 +124,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         if (StrUtil.isBlank(conversationId) || StrUtil.isBlank(userId)) {
             return null;
         }
+        // 只取最新一条摘要，作为上下文注入和下次增量摘要的输入基线。
         return summaryMapper.selectOne(
                 Wrappers.lambdaQuery(ConversationSummaryDO.class)
                         .eq(ConversationSummaryDO::getConversationId, conversationId)
@@ -127,6 +140,7 @@ public class ConversationGroupServiceImpl implements ConversationGroupService {
         if (StrUtil.isBlank(conversationId) || StrUtil.isBlank(userId)) {
             return null;
         }
+        // 查询始终带 deleted=0，避免已删除会话重新参与业务流程。
         return conversationMapper.selectOne(
                 Wrappers.lambdaQuery(ConversationDO.class)
                         .eq(ConversationDO::getConversationId, conversationId)

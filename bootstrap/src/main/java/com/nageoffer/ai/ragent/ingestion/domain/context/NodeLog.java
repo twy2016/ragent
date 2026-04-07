@@ -28,8 +28,10 @@ import lombok.NoArgsConstructor;
  * 记录摄取管道中各个节点的执行信息，包括执行时长、状态、输出等
  * 用于管道执行过程的监控和问题排查
  * </p>
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

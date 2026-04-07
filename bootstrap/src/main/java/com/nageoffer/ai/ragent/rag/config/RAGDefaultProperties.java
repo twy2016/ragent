@@ -37,8 +37,12 @@ import org.springframework.context.annotation.Configuration;
  *     dimension: 768
  *     metric-type: COSINE
  * </pre>
- */
-@Data
+ * <p>
+ * 这些默认值会被检索和向量存储模块共同使用，保证不同实现对同一知识库的理解一致。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Configuration
 @ConfigurationProperties(prefix = "rag.default")
 public class RAGDefaultProperties {

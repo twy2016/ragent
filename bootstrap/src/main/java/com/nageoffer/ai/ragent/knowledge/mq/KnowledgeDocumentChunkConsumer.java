@@ -31,6 +31,9 @@ import org.springframework.stereotype.Component;
 /**
  * 文档分块任务 MQ 消费者
  * 负责异步执行耗时的文本提取、分块、向量嵌入及写库操作
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
  */
 @Slf4j
 @Component

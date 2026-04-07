@@ -33,8 +33,10 @@ import java.util.function.Consumer;
 
 /**
  * 基于 RocketMQ 的消息生产者
- */
-@Slf4j
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @RequiredArgsConstructor
 public class RocketMQProducerAdapter implements MessageQueueProducer {
 

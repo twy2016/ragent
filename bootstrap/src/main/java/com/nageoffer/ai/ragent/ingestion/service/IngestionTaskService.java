@@ -29,8 +29,10 @@ import java.util.List;
 
 /**
  * 数据摄入任务服务接口
- */
-public interface IngestionTaskService {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface IngestionTaskService {
 
     /**
      * 执行数据摄入任务

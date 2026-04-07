@@ -47,6 +47,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+/**
+ * 
+SiliconFlowEmbeddingClient
+。
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */
 
 @Slf4j
 @Service

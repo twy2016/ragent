@@ -20,7 +20,14 @@ package com.nageoffer.ai.ragent.rag.core.prompt;
 import lombok.Builder;
 import lombok.Data;
 
-@Data
+/**
+ * Prompt 构建计划。
+ * <p>
+ * 用于描述一次 Prompt 组装最终应采用的场景和基础模板选择结果。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Builder
 public class PromptBuildPlan {
 

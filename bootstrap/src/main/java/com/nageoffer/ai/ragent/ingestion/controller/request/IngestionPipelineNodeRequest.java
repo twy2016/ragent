@@ -23,8 +23,10 @@ import lombok.Data;
 /**
  * 摄取管道节点请求对象
  * 用于接收管道中单个节点的配置信息，包括节点标识、类型、设置参数及执行条件
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 public class IngestionPipelineNodeRequest {
 
     /**

@@ -30,7 +30,14 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-@Data
+/**
+ * 会话主表实体。
+ * <p>
+ * 记录一个会话的基础元信息，如标题、所属用户和最后活跃时间。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

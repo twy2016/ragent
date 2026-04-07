@@ -44,8 +44,10 @@ import java.util.List;
  * - 默认方法 chat(String) / streamChat(String) 主要用于简单问答
  * - 复杂场景（带上下文、多轮对话、控制生成参数）需要使用 ChatRequest
  * - 流式模式下需正确处理 cancel()，并确保资源释放
- */
-public interface LLMService {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface LLMService {
 
     /**
      * 同步调用（简化模式）

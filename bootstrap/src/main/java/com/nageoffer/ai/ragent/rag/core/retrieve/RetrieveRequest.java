@@ -29,8 +29,12 @@ import java.util.Map;
  * - 支持基础 query + topK
  * - 支持指定 Milvus collectionName
  * - 支持简单的 metadata 等值过滤（扩展用）
- */
-@Data
+ * <p>
+ * 它是检索实现之间共享的统一入参对象，便于在不同向量引擎间切换。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

@@ -24,8 +24,10 @@ import com.nageoffer.ai.ragent.ingestion.domain.result.NodeResult;
 /**
  * 摄取节点接口，定义了数据摄取流程中的基本单元
  * 每个节点负责执行特定的处理逻辑
- */
-public interface IngestionNode {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface IngestionNode {
 
     /**
      * 获取节点类型标识

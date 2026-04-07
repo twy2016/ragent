@@ -27,8 +27,10 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * 首包等待器 - 用于等待第一个数据包到达的同步工具
  * 支持超时等待，并可区分成功、错误、超时、无内容等不同状态
- */
-public class FirstPacketAwaiter {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public class FirstPacketAwaiter {
 
     private final CountDownLatch latch = new CountDownLatch(1);
     private final AtomicBoolean hasContent = new AtomicBoolean(false);

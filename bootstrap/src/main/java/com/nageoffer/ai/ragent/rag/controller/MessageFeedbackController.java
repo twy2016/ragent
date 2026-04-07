@@ -29,8 +29,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 会话消息反馈控制器
- */
-@RestController
+ * <p>
+ * 对外提供用户对 assistant 消息进行点赞/点踩反馈的入口。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@RestController
 @RequiredArgsConstructor
 public class MessageFeedbackController {
 

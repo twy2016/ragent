@@ -22,8 +22,10 @@ import com.nageoffer.ai.ragent.ingestion.domain.enums.SourceType;
 
 /**
  * 文档提取接口，用于从不同源获取文档数据
- */
-public interface DocumentFetcher {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface DocumentFetcher {
 
     /**
      * 获取支持的源类型

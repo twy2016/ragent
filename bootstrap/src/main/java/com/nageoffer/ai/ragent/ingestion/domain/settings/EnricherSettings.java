@@ -31,8 +31,10 @@ import java.util.List;
  * 定义文本块富集节点的配置参数，包括模型ID、是否附加文档元数据以及富集任务列表
  * 富集器用于为分块后的文本块添加额外信息
  * </p>
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

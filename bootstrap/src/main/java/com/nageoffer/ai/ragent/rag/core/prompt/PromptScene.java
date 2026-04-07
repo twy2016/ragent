@@ -17,7 +17,14 @@
 
 package com.nageoffer.ai.ragent.rag.core.prompt;
 
-public enum PromptScene {
+/**
+ * Prompt 场景枚举。
+ * <p>
+ * 用于区分当前回答依赖的是 KB 证据、MCP 动态数据，还是两者混合场景。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public enum PromptScene {
 
     KB_ONLY,
 

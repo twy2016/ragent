@@ -35,8 +35,10 @@ import org.springframework.stereotype.Component;
  * 文档分块事务消息回查器
  * <p>
  * 按 topic 注册，Broker 回查时可路由到任意实例，通过查询 DB 中文档状态判断本地事务是否已提交
- */
-@Slf4j
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Component
 @RequiredArgsConstructor
 public class KnowledgeDocumentChunkTransactionChecker implements TransactionChecker {

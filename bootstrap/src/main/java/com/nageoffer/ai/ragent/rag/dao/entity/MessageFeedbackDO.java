@@ -33,8 +33,12 @@ import java.util.Date;
 /**
  * 会话消息反馈实体类
  * 用于存储用户对助手消息的点赞/踩反馈
- */
-@Data
+ * <p>
+ * 一般按“用户 + 消息”维度唯一约束，记录用户对单条 assistant 消息的评价。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

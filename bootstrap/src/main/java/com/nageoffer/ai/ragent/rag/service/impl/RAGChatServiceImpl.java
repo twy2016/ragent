@@ -60,8 +60,10 @@ import static com.nageoffer.ai.ragent.rag.constant.RAGConstant.DEFAULT_TOP_K;
  * <p>
  * 核心流程：
  * 记忆加载 -> 改写拆分 -> 意图解析 -> 歧义引导 -> 检索(MCP+KB) -> Prompt 组装 -> 流式输出
- */
-@Slf4j
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RAGChatServiceImpl implements RAGChatService {
@@ -77,24 +79,39 @@ public class RAGChatServiceImpl implements RAGChatService {
     private final IntentResolver intentResolver;
     private final RetrievalEngine retrievalEngine;
 
+    /**
+     * RAG 流式问答主流程。
+     * <p>
+     * 该方法在真正进入实现时，外层可能已经经过限流切面排队，因此这里可以认为自己已经拿到了
+     * 执行资格。方法内部按照“记忆补全 -> 问题改写 -> 意图识别 -> 歧义判断 -> 检索/直答 ->
+     * 模型流式输出”的顺序推进，并在合适时将可取消句柄绑定到任务管理器，供前端停止生成时使用。
+     */
     @Override
     @ChatRateLimit
     public void streamChat(String question, String conversationId, Boolean deepThinking, SseEmitter emitter) {
+        // conversationId 为空时创建新会话，保证后续记忆、检索、回调都围绕同一个会话 ID 运行。
         String actualConversationId = StrUtil.isBlank(conversationId) ? IdUtil.getSnowflakeNextIdStr() : conversationId;
+        // 优先复用 trace 上下文中的 taskId；若当前链路未注入，则本地补一个新的任务 ID。
         String taskId = StrUtil.isBlank(RagTraceContext.getTaskId())
                 ? IdUtil.getSnowflakeNextIdStr()
                 : RagTraceContext.getTaskId();
         log.info("开始流式对话，会话ID：{}，任务ID：{}", actualConversationId, taskId);
+        // deepThinking 允许为 null，这里统一折叠成布尔值，避免后续分支重复判空。
         boolean thinkingEnabled = Boolean.TRUE.equals(deepThinking);
 
+        // 回调对象负责把模型增量输出、结束事件和异常统一写回 SSE，并串联记忆落库等后置逻辑。
         StreamCallback callback = callbackFactory.createChatEventHandler(emitter, actualConversationId, taskId);
 
         String userId = UserContext.getUserId();
+        // 先把当前用户问题追加进会话记忆，再加载完整历史，确保后续改写/Prompt 看到的是最新上下文。
         List<ChatMessage> history = memoryService.loadAndAppend(actualConversationId, userId, ChatMessage.user(question));
 
+        // 将原始问题改写成更适合检索的表达，并在需要时拆分出多个子问题。
         RewriteResult rewriteResult = queryRewriteService.rewriteWithSplit(question, history);
+        // 针对改写后的问题与子问题做意图解析，决定后续走系统直答、知识库检索还是 MCP 工具分支。
         List<SubQuestionIntent> subIntents = intentResolver.resolve(rewriteResult);
 
+        // 若问题存在明显歧义，优先让用户补充信息，避免在错误前提上继续检索和生成。
         GuidanceDecision guidanceDecision = guidanceService.detectAmbiguity(rewriteResult.rewrittenQuestion(), subIntents);
         if (guidanceDecision.isPrompt()) {
             callback.onContent(guidanceDecision.getPrompt());
@@ -102,22 +119,27 @@ public class RAGChatServiceImpl implements RAGChatService {
             return;
         }
 
+        // 所有子问题都只命中系统节点时，说明无需外部检索，直接走系统 Prompt 流式回答即可。
         boolean allSystemOnly = subIntents.stream()
                 .allMatch(si -> intentResolver.isSystemOnly(si.nodeScores()));
         if (allSystemOnly) {
+            // 若节点提供了专用 Prompt 模板，则优先使用；否则回退到通用系统 Prompt。
             String customPrompt = subIntents.stream()
                     .flatMap(si -> si.nodeScores().stream())
                     .map(ns -> ns.getNode().getPromptTemplate())
                     .filter(StrUtil::isNotBlank)
                     .findFirst()
                     .orElse(null);
+            // 返回的 handle 用于后续 stopTask 时中断模型流式生成。
             StreamCancellationHandle handle = streamSystemResponse(rewriteResult.rewrittenQuestion(), history, customPrompt, callback);
             taskManager.bindHandle(taskId, handle);
             return;
         }
 
+        // 非系统直答场景进入 RAG 检索，聚合知识库片段、MCP 工具结果等增强上下文。
         RetrievalContext ctx = retrievalEngine.retrieve(subIntents, DEFAULT_TOP_K);
         if (ctx.isEmpty()) {
+            // 没有命中有效上下文时直接友好返回，避免模型在无依据情况下自由发挥。
             String emptyReply = "未检索到与问题相关的文档内容。";
             callback.onContent(emptyReply);
             callback.onComplete();
@@ -125,8 +147,10 @@ public class RAGChatServiceImpl implements RAGChatService {
         }
 
         // 聚合所有意图用于 prompt 规划
+        // 这里会把拆分后的多子问题意图合并，便于统一规划 Prompt 中的检索上下文和回答策略。
         IntentGroup mergedGroup = intentResolver.mergeIntentGroup(subIntents);
 
+        // 组装最终 Prompt 并发起真正的流式模型调用。
         StreamCancellationHandle handle = streamLLMResponse(
                 rewriteResult,
                 ctx,
@@ -135,6 +159,7 @@ public class RAGChatServiceImpl implements RAGChatService {
                 thinkingEnabled,
                 callback
         );
+        // 将句柄绑定到任务，供 stopTask 或异常清理时取消底层流式请求。
         taskManager.bindHandle(taskId, handle);
     }
 

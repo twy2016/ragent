@@ -39,8 +39,12 @@ import org.springframework.context.annotation.Configuration;
  *   uri: http://localhost:19530
  *   token: your-token-if-needed  # 可选，未开启鉴权时可以不配置或留空
  * </pre>
- */
-@Configuration
+ * <p>
+ * 该配置只在使用 Milvus 作为向量引擎时生效。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Configuration
 @ConditionalOnProperty(name = "rag.vector.type", havingValue = "milvus", matchIfMissing = true)
 public class MilvusConfig {
 

@@ -20,8 +20,12 @@ package com.nageoffer.ai.ragent.rag.core.intent;
 /**
  * 意图节点注册表
  * 用于在运行期快速获取意图树和节点信息
- */
-public interface IntentNodeRegistry {
+ * <p>
+ * 典型用途是把分类阶段返回的节点 ID 映射回完整节点定义，供后续歧义引导、Prompt 规划和检索路由复用。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface IntentNodeRegistry {
 
     /**
      * 根据节点 ID 获取节点

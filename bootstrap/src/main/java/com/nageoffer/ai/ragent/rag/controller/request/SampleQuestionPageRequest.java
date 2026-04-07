@@ -22,8 +22,12 @@ import lombok.Data;
 
 /**
  * 示例问题分页查询请求
- */
-@Data
+ * <p>
+ * 主要面向后台管理页按关键词过滤示例问题。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 public class SampleQuestionPageRequest extends Page {
 
     /**

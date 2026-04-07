@@ -21,7 +21,14 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-@Data
+/**
+ * 引导式问答配置属性。
+ * <p>
+ * 用于控制歧义检测是否开启，以及触发引导提示时的阈值和最大选项数。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Configuration
 @ConfigurationProperties(prefix = "rag.guidance")
 public class GuidanceProperties {

@@ -39,6 +39,13 @@ import java.util.concurrent.Executor;
 import static com.nageoffer.ai.ragent.rag.constant.RAGConstant.INTENT_MIN_SCORE;
 import static com.nageoffer.ai.ragent.rag.constant.RAGConstant.MAX_INTENT_COUNT;
 import static com.nageoffer.ai.ragent.rag.enums.IntentKind.SYSTEM;
+/**
+ * 
+IntentResolver
+。
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */
 
 @Service
 @RequiredArgsConstructor
@@ -51,18 +58,31 @@ public class IntentResolver {
 
     @RagTraceNode(name = "intent-resolve", type = "INTENT")
     public List<SubQuestionIntent> resolve(RewriteResult rewriteResult) {
+        // 优先使用改写阶段已经拆出的子问题；如果上游没有拆分结果，就把整个改写后问题当作一个子问题处理。
+        // 这样无论输入是单问还是多问，下游都能统一按“一个子问题对应一组意图候选”的结构继续处理。
         List<String> subQuestions = CollUtil.isNotEmpty(rewriteResult.subQuestions())
                 ? rewriteResult.subQuestions()
                 : List.of(rewriteResult.rewrittenQuestion());
+
+        // 为每个子问题并行做一次意图分类。
+        // 这里返回的是 CompletableFuture<SubQuestionIntent>，每个 future 最终都对应：
+        // 1. 当前子问题本身；
+        // 2. 这个子问题命中的意图候选列表（NodeScore）。
         List<CompletableFuture<SubQuestionIntent>> tasks = subQuestions.stream()
                 .map(q -> CompletableFuture.supplyAsync(
                         () -> new SubQuestionIntent(q, classifyIntents(q)),
                         intentClassifyExecutor
                 ))
                 .toList();
+
+        // 等待所有并行分类任务完成，收敛成最终结果。
+        // 这里使用 join() 是同步等待；如果某个子任务抛异常，异常也会在这里向外传播。
         List<SubQuestionIntent> subIntents = tasks.stream()
                 .map(CompletableFuture::join)
                 .toList();
+
+        // 整体意图数可能会超过系统允许的上限。
+        // capTotalIntents 会做一次全局裁剪：既尽量保留高分意图，也保证每个子问题至少保留一个意图候选。
         return capTotalIntents(subIntents);
     }
 

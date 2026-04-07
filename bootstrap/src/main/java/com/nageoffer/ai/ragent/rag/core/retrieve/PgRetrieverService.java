@@ -27,7 +27,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Slf4j
+/**
+ * 基于 pgvector 的向量检索实现。
+ * <p>
+ * 通过 PostgreSQL + pgvector 扩展完成向量相似度检索，适合轻量部署场景。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "rag.vector.type", havingValue = "pg")
@@ -38,6 +45,7 @@ public class PgRetrieverService implements RetrieverService {
 
     @Override
     public List<RetrievedChunk> retrieve(RetrieveRequest request) {
+        // 和其他检索实现保持一致，先从 query 生成 embedding，再复用按向量检索逻辑。
         List<Float> embedding = embeddingService.embed(request.getQuery());
         float[] vector = normalize(toArray(embedding));
         return retrieveByVector(vector, request);

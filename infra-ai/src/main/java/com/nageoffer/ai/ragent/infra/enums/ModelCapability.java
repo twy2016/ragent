@@ -23,8 +23,10 @@ import lombok.RequiredArgsConstructor;
 /**
  * 模型能力枚举类
  * 定义了AI模型支持的各种能力类型
- */
-@Getter
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Getter
 @RequiredArgsConstructor
 public enum ModelCapability {
 

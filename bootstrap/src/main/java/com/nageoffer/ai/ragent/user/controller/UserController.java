@@ -42,8 +42,10 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 用户控制器
  * 提供当前登录用户信息查询接口
- */
-@RestController
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@RestController
 @RequiredArgsConstructor
 public class UserController {
 

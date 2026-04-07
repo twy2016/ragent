@@ -32,8 +32,12 @@ import java.util.Date;
 
 /**
  * RAG Trace 运行记录
- */
-@Data
+ * <p>
+ * 表示一整条 trace 根链路的生命周期信息，通常由 @RagTraceRoot 或流式入口切面创建。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

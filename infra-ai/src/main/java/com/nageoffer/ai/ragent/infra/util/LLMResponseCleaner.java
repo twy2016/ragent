@@ -21,8 +21,10 @@ import java.util.regex.Pattern;
 
 /**
  * LLM 输出清理工具类
- */
-public final class LLMResponseCleaner {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public final class LLMResponseCleaner {
 
     private static final Pattern LEADING_CODE_FENCE = Pattern.compile("^```[\\w-]*\\s*\\n?");
     private static final Pattern TRAILING_CODE_FENCE = Pattern.compile("\\n?```\\s*$");

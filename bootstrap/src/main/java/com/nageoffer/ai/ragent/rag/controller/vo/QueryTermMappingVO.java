@@ -26,8 +26,12 @@ import java.util.Date;
 
 /**
  * 关键词映射视图对象
- */
-@Data
+ * <p>
+ * 用于后台管理页展示术语映射规则的完整信息。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

@@ -22,8 +22,10 @@ import com.nageoffer.ai.ragent.framework.exception.ClientException;
 
 /**
  * 用户上下文容器（基于 TTL 传递当前线程的登录用户）
- */
-public final class UserContext {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public final class UserContext {
 
     private static final TransmittableThreadLocal<LoginUser> CONTEXT = new TransmittableThreadLocal<>();
 

@@ -31,8 +31,10 @@ import java.util.Map;
 /**
  * 文档摄取上下文实体类
  * 在文档摄取管道执行过程中，承载和传递所有中间数据和状态信息
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

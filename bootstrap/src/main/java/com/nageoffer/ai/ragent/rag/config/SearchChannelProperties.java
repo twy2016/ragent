@@ -23,8 +23,12 @@ import org.springframework.stereotype.Component;
 
 /**
  * RAG 检索配置
- */
-@Data
+ * <p>
+ * 主要描述多通道检索体系中各通道的启停状态、阈值和召回放大倍率。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Component
 @ConfigurationProperties(prefix = "rag.search")
 public class SearchChannelProperties {

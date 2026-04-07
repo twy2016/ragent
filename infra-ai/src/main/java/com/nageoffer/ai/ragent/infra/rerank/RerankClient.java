@@ -25,8 +25,10 @@ import java.util.List;
 /**
  * Rerank客户端接口
  * 用于对检索到的文档片段进行重新排序，以提高检索结果的相关性
- */
-public interface RerankClient {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface RerankClient {
 
     /**
      * 获取Rerank服务提供商名称

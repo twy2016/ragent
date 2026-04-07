@@ -31,8 +31,10 @@ import java.util.Map;
  * 表示经过解析后的结构化文档，包含文档的纯文本内容、章节结构、表格以及元数据等信息
  * 通过结构化解析，可以更好地保留文档的原始结构信息
  * </p>
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

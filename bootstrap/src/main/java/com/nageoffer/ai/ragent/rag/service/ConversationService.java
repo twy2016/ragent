@@ -26,8 +26,12 @@ import java.util.List;
 /**
  * 会话服务接口
  * 提供会话的创建、重命名和删除功能
- */
-public interface ConversationService {
+ * <p>
+ * 主要关注会话主表及其元数据，不直接处理消息流式生成本身。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface ConversationService {
 
     /**
      * 根据用户ID获取会话列表

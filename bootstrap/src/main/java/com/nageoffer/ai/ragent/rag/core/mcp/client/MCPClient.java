@@ -25,8 +25,12 @@ import java.util.Map;
 /**
  * MCP 协议客户端接口
  * 用于与远程 MCP Server 通信，遵循 MCP 协议标准（JSON-RPC 2.0）
- */
-public interface MCPClient {
+ * <p>
+ * 对上层来说，它屏蔽了具体传输方式，只暴露初始化、列工具、调工具这三类核心能力。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface MCPClient {
 
     /**
      * 初始化连接，获取 server 能力

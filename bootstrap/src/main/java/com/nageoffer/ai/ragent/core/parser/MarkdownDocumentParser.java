@@ -31,8 +31,10 @@ import java.util.stream.Collectors;
  * <p>
  * 专门处理 Markdown 格式的文档
  * 保留原始 Markdown 格式，不进行 HTML 转换
- */
-@Component
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 public class MarkdownDocumentParser implements DocumentParser {
 
     @Override

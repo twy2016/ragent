@@ -40,8 +40,10 @@ import java.util.stream.Collectors;
 /**
  * 文本分块节点
  * 负责将输入的完整文本（原始文本或增强后的文本）按照指定的策略切分成多个较小的文本块（Chunk）
- */
-@Component
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 @RequiredArgsConstructor
 public class ChunkerNode implements IngestionNode {
 

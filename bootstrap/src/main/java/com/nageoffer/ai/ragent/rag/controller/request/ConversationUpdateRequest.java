@@ -21,8 +21,12 @@ import lombok.Data;
 
 /**
  * 会话更新请求类
- */
-@Data
+ * <p>
+ * 当前主要用于会话重命名场景。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 public class ConversationUpdateRequest {
 
     /**

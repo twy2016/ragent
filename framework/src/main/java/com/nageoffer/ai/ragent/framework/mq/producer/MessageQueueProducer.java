@@ -23,8 +23,10 @@ import java.util.function.Consumer;
 
 /**
  * 消息队列生产者接口
- */
-public interface MessageQueueProducer {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface MessageQueueProducer {
 
     /**
      * 发送消息

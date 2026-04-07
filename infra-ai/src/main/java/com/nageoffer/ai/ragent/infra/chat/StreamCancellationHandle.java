@@ -33,8 +33,10 @@ package com.nageoffer.ai.ragent.infra.chat;
  * 注意事项：
  * - cancel() 应保证幂等，即多次调用不会导致异常
  * - 取消后应确保底层模型推理取消并释放资源（线程、连接等）
- */
-public interface StreamCancellationHandle {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface StreamCancellationHandle {
 
     /**
      * 取消当前流式推理任务

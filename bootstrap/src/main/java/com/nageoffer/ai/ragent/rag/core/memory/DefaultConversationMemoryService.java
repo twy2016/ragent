@@ -27,7 +27,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-@Slf4j
+/**
+ * 默认会话记忆服务。
+ * <p>
+ * 这里负责把“历史消息存储”和“对话摘要”组合成最终提供给 RAG 链路的上下文视图：
+ * 1. 读取时并行加载摘要与近轮历史，降低等待时间；
+ * 2. 写入时先落原始消息，再异步触发摘要压缩；
+ * 3. 对任一子流程异常做降级，避免记忆模块影响主对话链路。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Service
 public class DefaultConversationMemoryService implements ConversationMemoryService {
 
@@ -43,6 +53,7 @@ public class DefaultConversationMemoryService implements ConversationMemoryServi
     @Override
     public List<ChatMessage> load(String conversationId, String userId) {
         // 参数校验
+        // 会话或用户信息缺失时，直接返回空上下文，避免继续访问存储层。
         if (StrUtil.isBlank(conversationId) || StrUtil.isBlank(userId)) {
             return List.of();
         }
@@ -50,6 +61,8 @@ public class DefaultConversationMemoryService implements ConversationMemoryServi
         long startTime = System.currentTimeMillis();
         try {
             // 并行加载摘要和历史记录
+            // 摘要和历史记录彼此独立，适合并行读取。
+            // 这样可以把“读数据库历史 + 读摘要”两条链路的耗时重叠起来。
             CompletableFuture<ChatMessage> summaryFuture = CompletableFuture.supplyAsync(
                     () -> loadSummaryWithFallback(conversationId, userId)
             );
@@ -58,6 +71,7 @@ public class DefaultConversationMemoryService implements ConversationMemoryServi
             );
 
             // 等待所有任务完成后合并结果
+            // 再按“摘要在前、历史在后”的顺序合并。
             return CompletableFuture.allOf(summaryFuture, historyFuture)
                     .thenApply(v -> {
                         ChatMessage summary = summaryFuture.join();
@@ -103,6 +117,7 @@ public class DefaultConversationMemoryService implements ConversationMemoryServi
         if (StrUtil.isBlank(conversationId) || StrUtil.isBlank(userId)) {
             return null;
         }
+        // 先持久化原始消息，确保对话本身可回放；摘要压缩作为附加能力异步触发。
         String messageId = memoryStore.append(conversationId, userId, message);
         summaryService.compressIfNeeded(conversationId, userId, message);
         return messageId;
@@ -110,12 +125,14 @@ public class DefaultConversationMemoryService implements ConversationMemoryServi
 
     private List<ChatMessage> attachSummary(ChatMessage summary, List<ChatMessage> messages) {
         // 确保返回值不为 null
+        // 没有历史消息时，不单独返回摘要，避免模型只看到摘要而失去最近轮次上下文。
         if (CollUtil.isEmpty(messages)) {
             return List.of();
         }
         if (summary == null) {
             return messages;
         }
+        // 摘要会被包装成 system 消息，作为“对长期历史的压缩上下文”放在最前面。
         List<ChatMessage> result = new ArrayList<>();
         result.add(summaryService.decorateIfNeeded(summary));
         result.addAll(messages);

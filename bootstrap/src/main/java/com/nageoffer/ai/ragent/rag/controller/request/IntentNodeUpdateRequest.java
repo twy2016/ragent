@@ -24,7 +24,14 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Data
+/**
+ * 意图节点更新请求。
+ * <p>
+ * 支持对意图节点的语义信息、检索参数和 Prompt 规则做增量修改。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

@@ -26,8 +26,12 @@ import java.time.Duration;
 /**
  * HTTP客户端配置类
  * 用于配置OkHttpClient的全局实例，设置连接超时、读取超时和写入超时等参数
- */
-@Configuration
+ * <p>
+ * 当前主要被远程 MCP 客户端等组件复用，避免项目内重复创建不同配置的 HTTP 客户端。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Configuration
 public class HttpClientConfig {
 
     /**

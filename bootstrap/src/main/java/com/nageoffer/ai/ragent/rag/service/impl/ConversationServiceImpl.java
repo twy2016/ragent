@@ -50,8 +50,10 @@ import static com.nageoffer.ai.ragent.rag.constant.RAGConstant.CONVERSATION_TITL
 /**
  * 会话服务实现类
  * 处理会话的创建、更新、重命名和删除等业务逻辑
- */
-@Slf4j
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ConversationServiceImpl implements ConversationService {
@@ -105,6 +107,7 @@ public class ConversationServiceImpl implements ConversationService {
         );
 
         if (existing == null) {
+            // 首次收到用户消息时创建会话，并基于首问生成标题。
             String title = generateTitleFromQuestion(question);
             ConversationDO record = ConversationDO.builder()
                     .conversationId(conversationId)
@@ -116,6 +119,7 @@ public class ConversationServiceImpl implements ConversationService {
             return;
         }
 
+        // 已存在的会话只刷新最后活跃时间，不主动覆盖标题。
         existing.setLastTime(request.getLastTime());
         conversationMapper.updateById(existing);
     }
@@ -146,6 +150,7 @@ public class ConversationServiceImpl implements ConversationService {
             throw new ClientException("会话不存在");
         }
 
+        // rename 只允许修改标题本身，不变更其他会话元数据。
         record.setTitle(title.trim());
         conversationMapper.updateById(record);
     }
@@ -168,6 +173,7 @@ public class ConversationServiceImpl implements ConversationService {
             throw new ClientException("会话不存在");
         }
 
+        // 删除会话时连同消息与摘要一并清理，避免留下孤立数据。
         conversationMapper.deleteById(record.getId());
         messageMapper.delete(
                 Wrappers.lambdaQuery(ConversationMessageDO.class)
@@ -188,6 +194,7 @@ public class ConversationServiceImpl implements ConversationService {
         if (maxLen <= 0) {
             maxLen = 30;
         }
+        // 标题生成本质是一次轻量 LLM 调用，Prompt 会显式约束长度和输出风格。
         String prompt = promptTemplateLoader.render(
                 CONVERSATION_TITLE_PROMPT_PATH,
                 Map.of(
@@ -206,6 +213,7 @@ public class ConversationServiceImpl implements ConversationService {
 
             return llmService.chat(request);
         } catch (Exception ex) {
+            // 标题生成失败不影响主流程，直接回退默认标题。
             log.warn("生成会话标题失败", ex);
             return "新对话";
         }

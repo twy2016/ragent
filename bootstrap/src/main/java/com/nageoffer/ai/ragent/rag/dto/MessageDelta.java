@@ -20,8 +20,12 @@ package com.nageoffer.ai.ragent.rag.dto;
 /**
  * 消息增量记录类
  * 用于表示消息的类型和增量数据
- */
-public record MessageDelta(String type, String delta) {
+ * <p>
+ * 是 SSE MESSAGE 事件的核心载荷类型，既可承载思考片段，也可承载正式回复片段。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public record MessageDelta(String type, String delta) {
 
     /**
      * 消息类型

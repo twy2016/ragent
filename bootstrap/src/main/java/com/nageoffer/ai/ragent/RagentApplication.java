@@ -24,6 +24,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * Ragent 核心应用启动类
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
  */
 @SpringBootApplication
 @EnableScheduling

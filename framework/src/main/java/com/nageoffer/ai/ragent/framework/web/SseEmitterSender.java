@@ -29,8 +29,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * <p>该类对 Spring 的 SseEmitter 进行封装，提供了线程安全的事件发送功能，
  * 统一处理连接关闭状态和异常情况。主要用于服务端向客户端推送实时数据流</p>
- */
-@Slf4j
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 public class SseEmitterSender {
 
     /**

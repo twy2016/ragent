@@ -19,6 +19,17 @@ package com.nageoffer.ai.ragent.rag.core.rewrite;
 
 import java.util.List;
 
-public record RewriteResult(String rewrittenQuestion, List<String> subQuestions) {
+/**
+ * 查询改写结果。
+ * <p>
+ * 同时保存：
+ * 1. 改写后的主问题；
+ * 2. 拆分得到的子问题列表。
+ * <p>
+ * 后续意图识别既会参考 rewrittenQuestion，也会优先按 subQuestions 逐个分类。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public record RewriteResult(String rewrittenQuestion, List<String> subQuestions) {
 
 }

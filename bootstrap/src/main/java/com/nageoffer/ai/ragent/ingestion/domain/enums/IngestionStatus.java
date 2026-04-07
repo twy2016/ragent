@@ -26,8 +26,10 @@ import lombok.RequiredArgsConstructor;
  * 摄取任务状态枚举
  * 定义文档摄取任务的执行状态
  * 状态值使用小写 snake_case，如 pending、running、completed
- */
-@Getter
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Getter
 @RequiredArgsConstructor
 public enum IngestionStatus {
 

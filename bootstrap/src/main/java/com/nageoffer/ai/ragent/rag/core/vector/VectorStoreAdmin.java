@@ -20,8 +20,12 @@ package com.nageoffer.ai.ragent.rag.core.vector;
 /**
  * 向量空间元数据/索引管理（与检索解耦）
  * 用于确保空间存在：不存在就按规格创建；存在则校验兼容性
- */
-public interface VectorStoreAdmin {
+ * <p>
+ * 它更关注“空间本身是否可用”，而不是具体文档向量的写入与删除。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface VectorStoreAdmin {
 
     /**
      * 幂等：确保向量空间存在（不存在则创建）

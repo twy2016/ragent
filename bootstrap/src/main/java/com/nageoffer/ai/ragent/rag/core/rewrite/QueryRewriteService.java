@@ -23,8 +23,12 @@ import java.util.List;
 
 /**
  * 用户查询改写：将自然语言问题改写成适合 RAG 检索的查询语句
- */
-public interface QueryRewriteService {
+ * <p>
+ * 这是改写链路的统一抽象，允许不同实现选择是否支持多问句拆分以及是否利用会话历史。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface QueryRewriteService {
 
     /**
      * 将用户问题改写为适合向量 / 关键字检索的简洁查询
@@ -37,6 +41,8 @@ public interface QueryRewriteService {
     /**
      * 可选：改写 + 拆分多问句
      * 默认实现仅返回改写结果并将其作为单个子问题
+     * <p>
+     * 适合没有专门拆分能力的实现类直接复用。
      */
     default RewriteResult rewriteWithSplit(String userQuestion) {
         String rewritten = rewrite(userQuestion);
@@ -46,6 +52,8 @@ public interface QueryRewriteService {
     /**
      * 可选：改写 + 拆分多问句，支持会话历史
      * 默认实现忽略历史，回退到基础改写逻辑
+     * <p>
+     * 只有当具体实现覆写该方法时，history 才会真正参与改写决策。
      */
     default RewriteResult rewriteWithSplit(String userQuestion, List<ChatMessage> history) {
         return rewriteWithSplit(userQuestion);

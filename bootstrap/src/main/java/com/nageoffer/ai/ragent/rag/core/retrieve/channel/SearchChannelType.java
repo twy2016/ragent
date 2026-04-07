@@ -19,8 +19,12 @@ package com.nageoffer.ai.ragent.rag.core.retrieve.channel;
 
 /**
  * 检索通道类型枚举
- */
-public enum SearchChannelType {
+ * <p>
+ * 用于区分结果来源、控制通道优先级以及输出日志统计。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public enum SearchChannelType {
 
     /**
      * 向量全局检索

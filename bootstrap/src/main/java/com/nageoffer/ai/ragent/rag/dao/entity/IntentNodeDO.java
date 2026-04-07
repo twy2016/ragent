@@ -30,7 +30,14 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-@Data
+/**
+ * 意图节点持久化实体。
+ * <p>
+ * 对应后台维护的意图树节点定义，是运行时 IntentNode 的数据库来源。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

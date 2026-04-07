@@ -28,8 +28,10 @@ import java.util.List;
 /**
  * 增强器设置实体类
  * 定义文档增强节点的配置参数，包括使用的模型ID和增强任务列表
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

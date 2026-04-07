@@ -34,8 +34,12 @@ import java.util.List;
 
 /**
  * RAG Trace 查询接口
- */
-@RestController
+ * <p>
+ * 提供链路观测页面所需的分页列表、详情和节点明细查询入口。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@RestController
 @RequiredArgsConstructor
 public class RagTraceController {
 

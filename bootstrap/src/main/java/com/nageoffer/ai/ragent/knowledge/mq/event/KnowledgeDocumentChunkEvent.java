@@ -27,8 +27,10 @@ import java.io.Serializable;
 
 /**
  * 文档分块任务事件
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

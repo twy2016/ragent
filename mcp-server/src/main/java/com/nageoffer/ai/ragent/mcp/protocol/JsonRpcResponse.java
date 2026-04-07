@@ -25,8 +25,10 @@ import lombok.NoArgsConstructor;
  * JSON-RPC 2.0 响应
  * <p>
  * 成功时返回 result，失败时返回 error
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class JsonRpcResponse {

@@ -60,8 +60,10 @@ import java.util.stream.Collectors;
 
 /**
  * 知识库 Chunk 服务实现
- */
-@Slf4j
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Service
 @RequiredArgsConstructor
 public class KnowledgeChunkServiceImpl implements KnowledgeChunkService {

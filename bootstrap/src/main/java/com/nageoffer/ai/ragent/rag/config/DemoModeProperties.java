@@ -23,8 +23,12 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * 体验环境只读模式配置
- */
-@Data
+ * <p>
+ * 通过一个总开关控制演示环境是否允许写操作进入业务层。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Configuration
 @ConfigurationProperties(prefix = "app")
 public class DemoModeProperties {

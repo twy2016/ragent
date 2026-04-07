@@ -24,7 +24,14 @@ import lombok.Data;
 
 import java.util.Date;
 
-@Data
+/**
+ * 查询术语映射规则实体。
+ * <p>
+ * 用于把用户口语化表达映射到更标准的检索术语，服务于本地查询归一化阶段。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @TableName("t_query_term_mapping")
 public class QueryTermMappingDO {
 

@@ -34,8 +34,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>
  * 使用 ConcurrentHashMap 存储工具执行器，支持运行时动态注册/注销
  * 启动时自动扫描并注册所有 MCPToolExecutor Bean
- */
-@Slf4j
+ * <p>
+ * 对上层来说，它提供的是“根据 toolId 找到执行器”的稳定入口，屏蔽工具来源差异。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Component
 @RequiredArgsConstructor
 public class DefaultMCPToolRegistry implements MCPToolRegistry {
@@ -60,6 +64,7 @@ public class DefaultMCPToolRegistry implements MCPToolRegistry {
             log.info("MCP 工具注册跳过, 未发现任何工具执行器");
         }
 
+        // 启动阶段自动注册所有被 Spring 托管的执行器，实现声明式扩展。
         for (MCPToolExecutor executor : autoDiscoveredExecutors) {
             register(executor);
         }
@@ -73,6 +78,7 @@ public class DefaultMCPToolRegistry implements MCPToolRegistry {
             return;
         }
 
+        // toolId 是注册表中的唯一键，也是意图节点配置和执行器之间的路由纽带。
         String toolId = executor.getToolId();
         if (toolId == null || toolId.isBlank()) {
             log.warn("工具 ID 为空，已忽略");

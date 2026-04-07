@@ -21,8 +21,10 @@ import org.apache.tika.Tika;
 
 /**
  * MimeType 探测器，用于识别文件或字节数组的媒体类型
- */
-public final class MimeTypeDetector {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public final class MimeTypeDetector {
 
     private static final Tika TIKA = new Tika();
 

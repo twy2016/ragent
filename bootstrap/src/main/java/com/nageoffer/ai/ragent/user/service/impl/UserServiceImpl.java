@@ -36,6 +36,13 @@ import com.nageoffer.ai.ragent.user.enums.UserRole;
 import com.nageoffer.ai.ragent.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+/**
+ * 
+UserServiceImpl
+。
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */
 
 @Service
 @RequiredArgsConstructor

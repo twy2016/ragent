@@ -25,7 +25,17 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+/**
+ * 意图树节点定义。
+ * <p>
+ * 它同时承载：
+ * 1. 意图识别阶段所需的语义信息；
+ * 2. 检索路由阶段所需的 collection / tool 绑定信息；
+ * 3. Prompt 规划阶段所需的规则与模板片段。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Builder
 public class IntentNode {
 

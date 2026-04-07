@@ -24,8 +24,10 @@ import java.util.Objects;
 
 /**
  * 幂等 MQ 消费状态枚举
- */
-@RequiredArgsConstructor
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@RequiredArgsConstructor
 public enum IdempotentConsumeStatusEnum {
 
     /**

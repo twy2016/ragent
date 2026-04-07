@@ -23,8 +23,10 @@ import java.util.Map;
 /**
  * 文件类型探测器工具类
  * 用于根据文件名或 MIME 类型识别文件类型
- */
-public final class FileTypeDetector {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public final class FileTypeDetector {
 
     private static final Map<String, String> EXTENSION_MAP = Map.ofEntries(
             Map.entry("pdf", "pdf"),

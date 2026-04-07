@@ -24,9 +24,22 @@ import com.nageoffer.ai.ragent.rag.core.mcp.MCPResponse;
 import java.util.List;
 import java.util.Map;
 
-public interface ContextFormatter {
+/**
+ * 上下文格式化器接口。
+ * <p>
+ * 用于把检索得到的结构化结果整理成适合拼进 Prompt 的文本块。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface ContextFormatter {
 
+    /**
+     * 格式化知识库检索上下文。
+     */
     String formatKbContext(List<NodeScore> kbIntents, Map<String, List<RetrievedChunk>> rerankedByIntent, int topK);
 
+    /**
+     * 格式化 MCP 工具调用上下文。
+     */
     String formatMcpContext(List<MCPResponse> responses, List<NodeScore> mcpIntents);
 }

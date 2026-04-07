@@ -36,6 +36,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
+/**
+ * 
+KnowledgeDocumentScheduleServiceImpl
+。
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */
 
 @Slf4j
 @Service

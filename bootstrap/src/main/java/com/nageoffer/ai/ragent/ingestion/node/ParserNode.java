@@ -41,8 +41,10 @@ import java.util.Map;
 /**
  * 文档解析节点
  * 负责将输入的字节流（如 PDF、Word、Excel 等）解析为结构化的文本或文档对象
- */
-@Component
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 public class ParserNode implements IngestionNode {
 
     private final ObjectMapper objectMapper;

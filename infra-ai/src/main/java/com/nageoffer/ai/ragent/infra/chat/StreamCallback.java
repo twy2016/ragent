@@ -34,8 +34,10 @@ package com.nageoffer.ai.ragent.infra.chat;
  * - onContent() 调用次数不定，由模型输出节奏决定
  * - onComplete() 必须保证在正常结束时调用一次
  * - onError() 应当捕获所有异常，避免影响客户端体验
- */
-public interface StreamCallback {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface StreamCallback {
 
     /**
      * 接收一次增量内容（Delta Token 或部分片段）

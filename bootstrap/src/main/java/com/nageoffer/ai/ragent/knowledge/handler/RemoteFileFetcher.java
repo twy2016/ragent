@@ -41,8 +41,10 @@ import java.util.Map;
 /**
  * 远程文件拉取服务
  * 封装远程文件的 HEAD 预检、流式下载、变更检测等逻辑
- */
-@Slf4j
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Component
 @RequiredArgsConstructor
 public class RemoteFileFetcher {

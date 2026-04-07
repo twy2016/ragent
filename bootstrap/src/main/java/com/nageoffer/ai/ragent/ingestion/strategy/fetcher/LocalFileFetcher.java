@@ -34,8 +34,10 @@ import java.nio.file.Path;
 /**
  * 本地文件抓取器
  * 负责从本地文件系统或对象存储（如 S3 协议）中读取文件内容
- */
-@Component
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 @RequiredArgsConstructor
 @Deprecated
 public class LocalFileFetcher implements DocumentFetcher {

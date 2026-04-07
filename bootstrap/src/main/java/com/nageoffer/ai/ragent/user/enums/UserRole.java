@@ -22,8 +22,10 @@ import lombok.Getter;
 /**
  * 用户角色枚举
  * 定义系统中的用户角色类型
- */
-@Getter
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Getter
 public enum UserRole {
 
     /**

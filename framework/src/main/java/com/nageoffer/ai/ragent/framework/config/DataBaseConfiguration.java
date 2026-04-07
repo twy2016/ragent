@@ -29,8 +29,10 @@ import org.springframework.context.annotation.Configuration;
 /**
  * 数据库持久层配置类
  * 配置 MyBatis-Plus 相关分页插件等
- */
-@Configuration
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Configuration
 public class DataBaseConfiguration {
 
     /**

@@ -23,7 +23,14 @@ import com.nageoffer.ai.ragent.rag.controller.request.QueryTermMappingPageReques
 import com.nageoffer.ai.ragent.rag.controller.request.QueryTermMappingUpdateRequest;
 import com.nageoffer.ai.ragent.rag.controller.vo.QueryTermMappingVO;
 
-public interface QueryTermMappingAdminService {
+/**
+ * 查询术语映射规则管理服务。
+ * <p>
+ * 主要面向后台管理端，用于维护用户说法和标准检索术语之间的映射关系。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface QueryTermMappingAdminService {
 
     /**
      * 创建映射规则

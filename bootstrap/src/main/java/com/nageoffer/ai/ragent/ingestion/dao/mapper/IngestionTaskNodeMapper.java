@@ -19,6 +19,13 @@ package com.nageoffer.ai.ragent.ingestion.dao.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.nageoffer.ai.ragent.ingestion.dao.entity.IngestionTaskNodeDO;
+/**
+ * 
+IngestionTaskNodeMapper
+。
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */
 
 public interface IngestionTaskNodeMapper extends BaseMapper<IngestionTaskNodeDO> {
 }

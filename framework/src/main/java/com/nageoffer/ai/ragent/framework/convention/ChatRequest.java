@@ -42,8 +42,10 @@ import java.util.List;
  *     .maxTokens(512)
  *     .build();
  * </pre>
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

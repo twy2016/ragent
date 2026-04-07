@@ -31,8 +31,10 @@ import java.io.InputStream;
 /**
  * S3对象存储文档提取器
  * 支持从S3兼容的对象存储（如RustFS）中获取文档，示例路径：s3://biz/5fb28010e16c4083ab07ca41f29804b0.md
- */
-@Component
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 @RequiredArgsConstructor
 public class S3Fetcher implements DocumentFetcher {
 

@@ -31,8 +31,12 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 /**
  * RAG 对话控制器
  * 提供流式问答与任务取消接口
- */
-@RestController
+ * <p>
+ * 这是前端发起聊天和中断生成的主要入口，对外暴露 SSE 流式协议。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@RestController
 @RequiredArgsConstructor
 public class RAGChatController {
 
@@ -40,6 +44,8 @@ public class RAGChatController {
 
     /**
      * 发起 SSE 流式对话
+     * <p>
+     * 控制器本身只负责创建 SseEmitter 并把请求转给服务层，业务链路由 RAGChatService 接管。
      */
     @IdempotentSubmit(
             key = "T(com.nageoffer.ai.ragent.framework.context.UserContext).getUserId()",
@@ -56,6 +62,8 @@ public class RAGChatController {
 
     /**
      * 停止指定任务
+     * <p>
+     * 通过 taskId 定位当前流式生成，并交由任务管理器做跨节点取消。
      */
     @IdempotentSubmit
     @PostMapping(value = "/rag/v3/stop")

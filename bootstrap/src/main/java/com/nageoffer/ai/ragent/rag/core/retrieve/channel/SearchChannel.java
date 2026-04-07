@@ -26,8 +26,12 @@ package com.nageoffer.ai.ragent.rag.core.retrieve.channel;
  * - ES 关键词检索
  * <p>
  * 多个通道可以并行执行，最后统一合并结果
- */
-public interface SearchChannel {
+ * <p>
+ * 因此通道实现只需要专注于自己的检索策略，不需要关心全局编排和后置处理链。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface SearchChannel {
 
     /**
      * 通道名称（用于日志和监控）
@@ -50,6 +54,8 @@ public interface SearchChannel {
 
     /**
      * 执行检索
+     * <p>
+     * 通道实现需要根据 SearchContext 产出带有结果、置信度和耗时信息的通道结果对象。
      *
      * @param context 检索上下文
      * @return 检索结果

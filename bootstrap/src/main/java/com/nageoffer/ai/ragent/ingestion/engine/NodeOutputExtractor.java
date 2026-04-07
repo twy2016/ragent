@@ -30,8 +30,10 @@ import java.util.Map;
 /**
  * 节点输出提取器
  * 负责从 IngestionContext 中提取特定节点的输出信息
- */
-@Component
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 public class NodeOutputExtractor {
 
     public Map<String, Object> extract(IngestionContext context, NodeConfig config) {

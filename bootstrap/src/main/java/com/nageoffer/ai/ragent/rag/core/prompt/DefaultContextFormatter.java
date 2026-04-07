@@ -32,7 +32,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Service
+/**
+ * 默认上下文格式化器。
+ * <p>
+ * 它负责把检索结果整理成适合放进 Prompt 的文本块，而不是简单拼接原始片段。
+ * 格式化时会同时考虑：
+ * 1. 单意图/多意图场景；
+ * 2. 节点上的回答规则提示词；
+ * 3. MCP 动态数据与 KB 文档证据的呈现差异。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Service
 @RequiredArgsConstructor
 public class DefaultContextFormatter implements ContextFormatter {
 
@@ -46,11 +57,13 @@ public class DefaultContextFormatter implements ContextFormatter {
         }
 
         // 多意图场景：合并所有规则和文档
+        // 这样可以避免 Prompt 中出现大量重复结构。
         if (kbIntents.size() > 1) {
             return formatMultiIntentContext(kbIntents, rerankedByIntent, topK);
         }
 
         // 单意图场景：保持原有逻辑
+        // 这样可以最大程度保留节点本身的专属规则。
         return formatSingleIntentContext(kbIntents.get(0), rerankedByIntent, topK);
     }
 
@@ -62,6 +75,7 @@ public class DefaultContextFormatter implements ContextFormatter {
         if (CollUtil.isEmpty(chunks)) {
             return "";
         }
+        // 单意图场景优先保留节点上的 promptSnippet，作为模型回答该类问题的规则约束。
         String snippet = StrUtil.emptyIfNull(nodeScore.getNode().getPromptSnippet()).trim();
         String body = chunks.stream()
                 .limit(topK)
@@ -98,6 +112,7 @@ public class DefaultContextFormatter implements ContextFormatter {
         }
 
         // 2. 合并所有意图的文档片段（去重）
+        // 多意图场景里同一 chunk 可能被多个节点命中，这里统一去重后再截断。
         List<RetrievedChunk> allChunks = rerankedByIntent.values().stream()
                 .flatMap(List::stream)
                 .distinct()
@@ -117,6 +132,7 @@ public class DefaultContextFormatter implements ContextFormatter {
     private String formatChunksWithoutIntent(Map<String, List<RetrievedChunk>> rerankedByIntent, int topK) {
         int limit = topK > 0 ? topK : Integer.MAX_VALUE;
         List<RetrievedChunk> chunks = new ArrayList<>();
+        // 没有明确意图时，退化为“直接按已有顺序收集 chunk”，尽量给模型保留基础证据。
         for (List<RetrievedChunk> list : rerankedByIntent.values()) {
             if (CollUtil.isEmpty(list)) {
                 continue;
@@ -147,6 +163,7 @@ public class DefaultContextFormatter implements ContextFormatter {
             return "";
         }
         if (CollUtil.isEmpty(mcpIntents)) {
+            // 没有明确意图映射时，直接合并所有响应文本作为通用动态上下文。
             return mergeResponsesToText(responses);
         }
 
@@ -171,6 +188,7 @@ public class DefaultContextFormatter implements ContextFormatter {
                         return "";
                     }
                     IntentNode node = entry.getValue();
+                    // MCP 节点也可以附带规则提示，用于约束模型如何解释某类工具输出。
                     String snippet = StrUtil.emptyIfNull(node.getPromptSnippet()).trim();
                     String body = mergeResponsesToText(toolResponses);
                     if (StrUtil.isBlank(body)) {
@@ -216,6 +234,7 @@ public class DefaultContextFormatter implements ContextFormatter {
         }
 
         if (!errorResults.isEmpty()) {
+            // 保留失败信息而不是完全吞掉，便于模型或前端理解“数据为什么可能不完整”。
             sb.append("【部分查询失败】\n");
             for (String error : errorResults) {
                 sb.append("- ").append(error).append("\n");

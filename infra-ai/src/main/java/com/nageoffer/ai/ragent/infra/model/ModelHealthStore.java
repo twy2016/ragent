@@ -27,8 +27,10 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 模型健康状态存储器
  * 用于管理和跟踪各个 AI 模型的健康状况，实现断路器模式
- */
-@Component
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 @RequiredArgsConstructor
 public class ModelHealthStore {
 

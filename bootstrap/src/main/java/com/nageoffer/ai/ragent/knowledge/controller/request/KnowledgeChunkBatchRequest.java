@@ -23,8 +23,10 @@ import java.util.List;
 
 /**
  * 知识库 Chunk 批量操作请求
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 public class KnowledgeChunkBatchRequest {
 
     /**

@@ -24,7 +24,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-@Slf4j
+/**
+ * 基于 pgvector 的向量空间管理实现。
+ * <p>
+ * 主要负责确保底层表上的 HNSW 索引存在，而不是创建独立 collection。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "rag.vector.type", havingValue = "pg")

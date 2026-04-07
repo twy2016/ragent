@@ -27,8 +27,10 @@ import lombok.NoArgsConstructor;
  * <p>
  * 表示一次向量检索或相关性搜索命中的单条记录
  * 包含原始文档片段 主键以及相关性得分
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

@@ -27,8 +27,12 @@ import java.util.Map;
 
 /**
  * MCP 调用请求
- */
-@Data
+ * <p>
+ * 描述一次工具调用所需的全部输入，包括工具标识、会话上下文和结构化参数。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -62,6 +66,8 @@ public class MCPRequest {
 
     /**
      * 添加参数
+     * <p>
+     * 适合在构建后按需补充动态参数。
      */
     public void addParameter(String key, Object value) {
         if (this.parameters == null) {
@@ -72,6 +78,8 @@ public class MCPRequest {
 
     /**
      * 获取参数
+     * <p>
+     * 由调用方负责保证泛型类型和真实存储类型一致。
      */
     @SuppressWarnings("unchecked")
     public <T> T getParameter(String key) {
@@ -84,6 +92,8 @@ public class MCPRequest {
 
     /**
      * 获取字符串参数
+     * <p>
+     * 常用于读取通用的字符串型工具入参。
      */
     public String getStringParameter(String key) {
         Object value = parameters.get(key);

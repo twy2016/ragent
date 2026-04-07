@@ -22,6 +22,11 @@ import cn.hutool.core.util.StrUtil;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+/**
+ * Prompt 模板工具类。
+ * <p>
+ * 提供占位符填充和空行清理等通用文本处理能力，供模板加载器和 Prompt 编排层复用。
+ */
 public final class PromptTemplateUtils {
     private static final Pattern MULTI_BLANK_LINES = Pattern.compile("(\\n){3,}");
 

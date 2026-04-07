@@ -23,7 +23,14 @@ import com.nageoffer.ai.ragent.rag.mq.event.MessageFeedbackEvent;
 import java.util.List;
 import java.util.Map;
 
-public interface MessageFeedbackService {
+/**
+ * 消息反馈服务接口。
+ * <p>
+ * 负责管理用户对 assistant 消息的点赞/点踩等反馈，并支持同步与异步两种提交模式。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface MessageFeedbackService {
 
     /**
      * 提交会话消息反馈（同步，供内部直接调用）

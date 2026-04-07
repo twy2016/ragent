@@ -28,6 +28,9 @@ import org.springframework.stereotype.Component;
 
 /**
  * 消息反馈 MQ 消费者，负责将点赞/点踩事件异步持久化到数据库
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
  */
 @Slf4j
 @Component

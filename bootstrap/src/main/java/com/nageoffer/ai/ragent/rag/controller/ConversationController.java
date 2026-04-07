@@ -39,8 +39,12 @@ import java.util.List;
 /**
  * 会话控制器
  * 提供会话相关的REST API接口，包括会话列表获取、重命名、删除以及会话消息列表获取等功能
- */
-@RestController
+ * <p>
+ * 主要面向聊天历史管理页，不参与实际的流式生成过程。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@RestController
 @RequiredArgsConstructor
 public class ConversationController {
 

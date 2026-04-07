@@ -26,8 +26,10 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * RocketMQ 消息队列自动装配配置
- */
-@Configuration
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Configuration
 public class RocketMQAutoConfiguration {
 
     @Bean

@@ -24,6 +24,10 @@ import com.nageoffer.ai.ragent.rag.core.intent.NodeScore;
  *
  * @param subQuestionIndex 子问题下标
  * @param nodeScore        意图候选分数
- */
-public record IntentCandidate(int subQuestionIndex, NodeScore nodeScore) {
+ * <p>
+ * 主要用于全局意图裁剪阶段，把不同子问题的候选放到同一个排序空间里比较。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public record IntentCandidate(int subQuestionIndex, NodeScore nodeScore) {
 }

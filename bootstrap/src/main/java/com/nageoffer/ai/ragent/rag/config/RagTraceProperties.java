@@ -23,8 +23,12 @@ import org.springframework.stereotype.Component;
 
 /**
  * RAG Trace 配置
- */
-@Data
+ * <p>
+ * 控制链路追踪能力是否启用，以及错误信息落库时的长度限制。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Component
 @ConfigurationProperties(prefix = "rag.trace")
 public class RagTraceProperties {

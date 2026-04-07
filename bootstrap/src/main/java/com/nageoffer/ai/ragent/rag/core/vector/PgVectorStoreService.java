@@ -29,7 +29,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
+/**
+ * 基于 pgvector 的向量写入实现。
+ * <p>
+ * 通过普通 SQL 对向量表执行插入、更新和删除操作，适合轻量级 PostgreSQL 部署场景。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "rag.vector.type", havingValue = "pg")
@@ -97,6 +104,7 @@ public class PgVectorStoreService implements VectorStoreService {
     }
 
     private String buildMetadataJson(String collectionName, String docId, VectorChunk chunk) {
+        // 统一补齐 collection_name/doc_id/chunk_index，便于后续按文档或知识库删除向量。
         Map<String, Object> meta = new LinkedHashMap<>();
         if (chunk.getMetadata() != null) {
             meta.putAll(chunk.getMetadata());

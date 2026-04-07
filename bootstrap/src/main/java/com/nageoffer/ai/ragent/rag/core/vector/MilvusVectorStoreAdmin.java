@@ -34,7 +34,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
+/**
+ * 基于 Milvus 的向量空间管理实现。
+ * <p>
+ * 负责创建 collection、字段 schema 和 HNSW 索引，是 Milvus 写入链路的前置准备步骤。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "rag.vector.type", havingValue = "milvus", matchIfMissing = true)
@@ -50,9 +57,11 @@ public class MilvusVectorStoreAdmin implements VectorStoreAdmin {
                 HasCollectionReq.builder().collectionName(logicalName).build()
         ));
         if (exists) {
+            // 当前策略下 collection 已存在直接抛错，由上层决定是否忽略或提示重复创建。
             throw new VectorCollectionAlreadyExistsException(logicalName);
         }
 
+        // 统一按 id/content/metadata/embedding 四类字段构建标准 collection schema。
         List<CreateCollectionReq.FieldSchema> fieldSchemaList = new ArrayList<>();
 
         fieldSchemaList.add(
@@ -122,6 +131,7 @@ public class MilvusVectorStoreAdmin implements VectorStoreAdmin {
     @Override
     public boolean vectorSpaceExists(VectorSpaceId spaceId) {
         String logicalName = spaceId.getLogicalName();
+        // 这里仅判断 collection 是否存在，不做兼容性校验。
         return milvusClient.hasCollection(
                 HasCollectionReq.builder().collectionName(logicalName).build()
         );

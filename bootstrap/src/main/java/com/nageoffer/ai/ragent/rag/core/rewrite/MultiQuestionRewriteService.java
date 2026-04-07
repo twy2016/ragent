@@ -43,8 +43,13 @@ import static com.nageoffer.ai.ragent.rag.constant.RAGConstant.QUERY_REWRITE_AND
 
 /**
  * 查询预处理：改写 + 拆分多问句
- */
-@Slf4j
+ * <p>
+ * 它在真正进入意图识别前，先把用户问题做术语归一化、模型改写和子问题拆分，
+ * 以提升后续检索与路由阶段的稳定性。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MultiQuestionRewriteService implements QueryRewriteService {
@@ -69,6 +74,7 @@ public class MultiQuestionRewriteService implements QueryRewriteService {
     @RagTraceNode(name = "query-rewrite-and-split", type = "REWRITE")
     public RewriteResult rewriteWithSplit(String userQuestion, List<ChatMessage> history) {
         if (!ragConfigProperties.getQueryRewriteEnabled()) {
+            // 关闭模型改写时，退化为“本地归一化 + 规则拆分”的轻量模式。
             String normalized = queryTermMappingService.normalize(userQuestion);
             List<String> subs = ruleBasedSplit(normalized);
             return new RewriteResult(normalized, subs);
@@ -81,6 +87,8 @@ public class MultiQuestionRewriteService implements QueryRewriteService {
 
     /**
      * 先用默认改写做归一化，再进行多问句拆分。
+     * <p>
+     * 该入口主要用于不依赖会话历史的场景。
      */
     private RewriteResult rewriteAndSplit(String userQuestion) {
         // 开关关闭：直接做规则归一化 + 规则拆分
@@ -183,6 +191,7 @@ public class MultiQuestionRewriteService implements QueryRewriteService {
             if (StrUtil.isBlank(rewrite)) {
                 return null;
             }
+            // 如果模型没返回子问题列表，则退化为“改写结果本身就是唯一子问题”。
             if (CollUtil.isEmpty(subs)) {
                 subs = List.of(rewrite);
             }
@@ -203,6 +212,7 @@ public class MultiQuestionRewriteService implements QueryRewriteService {
         if (CollUtil.isEmpty(parts)) {
             return List.of(question);
         }
+        // 统一补问号，保持拆分后的子问题更符合后续检索和展示语义。
         return parts.stream()
                 .map(s -> s.endsWith("？") || s.endsWith("?") ? s : s + "？")
                 .toList();

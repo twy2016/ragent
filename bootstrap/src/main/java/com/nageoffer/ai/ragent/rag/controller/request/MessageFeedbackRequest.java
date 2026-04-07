@@ -21,8 +21,12 @@ import lombok.Data;
 
 /**
  * 会话消息反馈请求
- */
-@Data
+ * <p>
+ * 由前端提交，用于表达用户对 assistant 消息质量的评价。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 public class MessageFeedbackRequest {
 
     /**

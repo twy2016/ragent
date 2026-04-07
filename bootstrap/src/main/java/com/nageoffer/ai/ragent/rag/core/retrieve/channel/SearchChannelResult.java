@@ -29,8 +29,12 @@ import java.util.Map;
  * 检索通道结果
  * <p>
  * 封装单个通道的检索结果及元信息
- */
-@Data
+ * <p>
+ * 后续去重、重排等后处理器会同时参考 chunks 本身和这里的通道级元数据。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Builder
 public class SearchChannelResult {
 

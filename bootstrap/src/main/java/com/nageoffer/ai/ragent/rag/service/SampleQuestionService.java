@@ -25,7 +25,14 @@ import com.nageoffer.ai.ragent.rag.controller.vo.SampleQuestionVO;
 
 import java.util.List;
 
-public interface SampleQuestionService {
+/**
+ * 示例问题服务接口。
+ * <p>
+ * 用于维护首页或会话入口展示的示例提问，并支持随机推荐能力。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface SampleQuestionService {
 
     /**
      * 创建示例问题

@@ -29,7 +29,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-@Slf4j
+/**
+ * 查询术语映射服务。
+ * <p>
+ * 在真正进入 LLM 改写之前，先基于后台维护的映射规则做一层本地术语归一化，
+ * 降低用户口语化表达和知识库标准术语之间的偏差。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Service
 @RequiredArgsConstructor
 public class QueryTermMappingService {
@@ -57,6 +65,8 @@ public class QueryTermMappingService {
 
     /**
      * 对用户问题做术语归一化
+     * <p>
+     * 这里是纯本地替换逻辑，不依赖模型，因此非常适合作为改写链路的第一步预处理。
      */
     public String normalize(String text) {
         if (text == null || text.isEmpty() || cachedMappings.isEmpty()) {

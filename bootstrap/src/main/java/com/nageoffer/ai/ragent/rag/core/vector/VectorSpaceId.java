@@ -22,7 +22,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
+/**
+ * 向量空间标识。
+ * <p>
+ * 通过 logicalName + namespace 的组合，把业务侧使用的逻辑空间名映射到具体底层引擎命名空间。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

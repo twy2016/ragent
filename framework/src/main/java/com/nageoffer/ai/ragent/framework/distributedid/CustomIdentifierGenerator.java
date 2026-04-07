@@ -24,8 +24,10 @@ import org.springframework.stereotype.Component;
 /**
  * 自定义 ID 生成器
  * 基于 Hutool 的 Snowflake 算法，替换 MyBatisPlus 默认的分布式 ID 生成策略
- */
-@Component
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Component
 public class CustomIdentifierGenerator implements IdentifierGenerator {
 
     @Override

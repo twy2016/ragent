@@ -24,8 +24,12 @@ import lombok.NoArgsConstructor;
 
 /**
  * 每个叶子分类节点对应的 LLM 匹配分数
- */
-@NoArgsConstructor
+ * <p>
+ * 它是意图识别阶段最核心的中间结果，后续会被用于意图裁剪、歧义判断和检索路由。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data

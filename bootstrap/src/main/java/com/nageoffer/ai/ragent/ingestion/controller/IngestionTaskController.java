@@ -43,8 +43,10 @@ import java.util.List;
 
 /**
  * 知识库采集任务控制层
- */
-@RestController
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@RestController
 @RequiredArgsConstructor
 @Validated
 public class IngestionTaskController {

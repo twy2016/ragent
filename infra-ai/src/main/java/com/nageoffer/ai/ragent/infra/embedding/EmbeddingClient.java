@@ -24,8 +24,10 @@ import java.util.List;
 /**
  * 文本嵌入客户端接口
  * 用于将文本转换为向量表示，支持单个文本和批量文本的嵌入操作
- */
-public interface EmbeddingClient {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface EmbeddingClient {
 
     /**
      * 获取嵌入服务提供商名称

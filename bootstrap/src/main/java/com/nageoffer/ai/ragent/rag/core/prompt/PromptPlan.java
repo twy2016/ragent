@@ -25,7 +25,16 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-@Data
+/**
+ * KB Prompt 规划结果。
+ * <p>
+ * 主要回答两个问题：
+ * 1. 哪些意图在真正检索到文档后应该被保留；
+ * 2. 是否存在可直接采用的节点级基础模板。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Builder

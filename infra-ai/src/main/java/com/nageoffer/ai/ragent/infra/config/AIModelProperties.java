@@ -29,8 +29,10 @@ import java.util.Map;
 /**
  * AI 模型配置属性类
  * 用于从配置文件中读取 AI 相关的配置信息，包括提供商配置、模型组配置等
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Configuration
 @ConfigurationProperties(prefix = "ai")
 public class AIModelProperties {

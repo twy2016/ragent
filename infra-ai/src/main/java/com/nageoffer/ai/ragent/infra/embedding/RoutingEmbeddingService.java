@@ -38,8 +38,10 @@ import java.util.stream.Collectors;
  * <p>
  * 该服务通过模型路由器选择合适的嵌入模型，并在执行失败时自动进行降级处理
  * 支持单文本和批量文本的向量化操作
- */
-@Service
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Service
 @Primary
 public class RoutingEmbeddingService implements EmbeddingService {
 

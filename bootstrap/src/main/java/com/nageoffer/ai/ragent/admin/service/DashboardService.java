@@ -20,6 +20,13 @@ package com.nageoffer.ai.ragent.admin.service;
 import com.nageoffer.ai.ragent.admin.controller.vo.DashboardOverviewVO;
 import com.nageoffer.ai.ragent.admin.controller.vo.DashboardPerformanceVO;
 import com.nageoffer.ai.ragent.admin.controller.vo.DashboardTrendsVO;
+/**
+ * 
+DashboardService
+。
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */
 
 public interface DashboardService {
 

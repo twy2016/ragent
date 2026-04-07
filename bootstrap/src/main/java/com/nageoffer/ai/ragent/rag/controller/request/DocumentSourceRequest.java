@@ -25,6 +25,8 @@ import java.util.Map;
 /**
  * 文档源请求对象
  * 用于接收创建摄取任务时的文档来源信息，包括来源类型、位置、文件名及访问凭证
+ * <p>
+ * 它描述的是“文档来自哪里”，而不是具体的知识库切片内容。
  */
 @Data
 public class DocumentSourceRequest {

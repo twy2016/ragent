@@ -36,8 +36,12 @@ import java.util.concurrent.Executor;
  * <p>
  * 基于意图识别结果，在特定知识库中进行定向检索
  * 这是最精确的检索方式，优先级最高
- */
-@Slf4j
+ * <p>
+ * 它只在确实命中了 KB 意图时启用，因此相比全局检索噪声更低、召回更聚焦。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Component
 public class IntentDirectedSearchChannel implements SearchChannel {
 
@@ -147,6 +151,8 @@ public class IntentDirectedSearchChannel implements SearchChannel {
 
     /**
      * 提取 KB 意图
+     * <p>
+     * 这里只保留达到最小置信度阈值的 KB 节点，避免低质量意图把检索范围拉宽。
      */
     private List<NodeScore> extractKbIntents(SearchContext context) {
         double minScore = properties.getChannels().getIntentDirected().getMinIntentScore();

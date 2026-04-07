@@ -44,8 +44,10 @@ import java.util.stream.Collectors;
  * 1. 并行执行所有启用的检索通道
  * 2. 依次执行后置处理器链
  * 3. 返回最终的检索结果
- */
-@Slf4j
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MultiChannelRetrievalEngine {
@@ -65,6 +67,7 @@ public class MultiChannelRetrievalEngine {
     @RagTraceNode(name = "multi-channel-retrieval", type = "RETRIEVE_CHANNEL")
     public List<RetrievedChunk> retrieveKnowledgeChannels(List<SubQuestionIntent> subIntents, int topK) {
         // 构建检索上下文
+        // SearchContext 是所有通道和后置处理器共享的统一入参。
         SearchContext context = buildSearchContext(subIntents, topK);
 
         // 【阶段1：多通道并行检索】
@@ -82,6 +85,7 @@ public class MultiChannelRetrievalEngine {
      */
     private List<SearchChannelResult> executeSearchChannels(SearchContext context) {
         // 过滤启用的通道
+        // 再按优先级排序，便于日志和后续处理保持稳定顺序。
         List<SearchChannel> enabledChannels = searchChannels.stream()
                 .filter(channel -> channel.isEnabled(context))
                 .sorted(Comparator.comparingInt(SearchChannel::getPriority))
@@ -95,6 +99,7 @@ public class MultiChannelRetrievalEngine {
                 enabledChannels.stream().map(SearchChannel::getName).toList());
 
         // 并行执行所有通道
+        // 各通道互相独立，适合并发执行；某个通道失败不应拖垮整个检索阶段。
         List<CompletableFuture<SearchChannelResult>> futures = enabledChannels.stream()
                 .map(channel -> CompletableFuture.supplyAsync(
                         () -> {
@@ -116,6 +121,7 @@ public class MultiChannelRetrievalEngine {
                 .toList();
 
         // 等待所有通道完成并统计
+        // 同时统计命中情况，便于观察不同通道的实际效果。
         int successCount = 0;
         int failureCount = 0;
         int totalChunks = 0;
@@ -167,6 +173,7 @@ public class MultiChannelRetrievalEngine {
     private List<RetrievedChunk> executePostProcessors(List<SearchChannelResult> results,
                                                        SearchContext context) {
         // 过滤启用的处理器并排序
+        // 后置处理器链负责做“跨通道结果整理”，例如去重、重排、截断等。
         List<SearchResultPostProcessor> enabledProcessors = postProcessors.stream()
                 .filter(processor -> processor.isEnabled(context))
                 .sorted(Comparator.comparingInt(SearchResultPostProcessor::getOrder))
@@ -180,6 +187,7 @@ public class MultiChannelRetrievalEngine {
         }
 
         // 初始 Chunk 列表（所有通道的结果合并）
+        // 后置处理从“所有通道结果扁平合并后的 chunks”开始。
         List<RetrievedChunk> chunks = results.stream()
                 .flatMap(r -> r.getChunks().stream())
                 .collect(Collectors.toList());
@@ -187,6 +195,7 @@ public class MultiChannelRetrievalEngine {
         int initialSize = chunks.size();
 
         // 依次执行处理器
+        // 前一个处理器的输出就是后一个处理器的输入。
         for (SearchResultPostProcessor processor : enabledProcessors) {
             try {
                 int beforeSize = chunks.size();
@@ -215,6 +224,8 @@ public class MultiChannelRetrievalEngine {
      * 构建检索上下文
      */
     private SearchContext buildSearchContext(List<SubQuestionIntent> subIntents, int topK) {
+        // 构建检索上下文
+        // 目前多通道检索按“子问题级”工作，这里取第一个子问题作为当前检索上下文的主问题文本。
         String question = CollUtil.isEmpty(subIntents) ? "" : subIntents.get(0).subQuestion();
 
         return SearchContext.builder()

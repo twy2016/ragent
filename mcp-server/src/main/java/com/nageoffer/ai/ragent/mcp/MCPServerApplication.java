@@ -22,8 +22,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * MCP Server 启动类
- */
-@SpringBootApplication
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@SpringBootApplication
 public class MCPServerApplication {
 
     public static void main(String[] args) {

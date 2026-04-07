@@ -42,8 +42,12 @@ import java.util.Date;
 
 /**
  * 注解式 RAG Trace 采集切面
- */
-@Slf4j
+ * <p>
+ * 负责拦截 {@code @RagTraceRoot} 和 {@code @RagTraceNode} 标注的方法，自动记录根链路和节点级运行信息。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Slf4j
 @Aspect
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE + 10)
@@ -89,6 +93,7 @@ public class RagTraceAspect {
                 .startTime(startTime)
                 .build());
 
+        // 将 traceId 放入上下文，供后续节点切面和异步线程继续复用。
         RagTraceContext.setTraceId(traceId);
         try {
             Object result = joinPoint.proceed();
@@ -121,6 +126,7 @@ public class RagTraceAspect {
         }
         String traceId = RagTraceContext.getTraceId();
         if (StrUtil.isBlank(traceId)) {
+            // 没有 trace 根上下文时，节点注解不单独生效，避免产生孤立节点记录。
             return joinPoint.proceed();
         }
 
@@ -145,6 +151,7 @@ public class RagTraceAspect {
                 .startTime(startTime)
                 .build());
 
+        // 入栈后，当前节点会成为其子节点的 parentNodeId 来源。
         RagTraceContext.pushNode(nodeId);
         try {
             Object result = joinPoint.proceed();

@@ -24,7 +24,14 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Data
+/**
+ * 意图节点批量操作请求。
+ * <p>
+ * 主要用于批量启用、停用或删除意图节点。
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

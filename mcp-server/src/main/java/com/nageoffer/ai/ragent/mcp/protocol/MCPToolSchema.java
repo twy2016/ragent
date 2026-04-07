@@ -27,8 +27,10 @@ import java.util.Map;
 
 /**
  * MCP tools/list 返回的工具 Schema（符合 MCP 规范）
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

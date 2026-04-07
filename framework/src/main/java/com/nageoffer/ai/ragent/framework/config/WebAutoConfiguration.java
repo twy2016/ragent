@@ -23,8 +23,10 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Web 组件自动装配
- */
-@Configuration
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Configuration
 public class WebAutoConfiguration {
 
     /**

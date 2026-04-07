@@ -25,8 +25,10 @@ import lombok.NoArgsConstructor;
 /**
  * 节点执行结果实体类
  * 表示管道中单个节点执行完成后的结果信息，包含执行状态、是否继续执行后续节点等信息
- */
-@Data
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

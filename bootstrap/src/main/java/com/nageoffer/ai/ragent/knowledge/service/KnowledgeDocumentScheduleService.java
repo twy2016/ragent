@@ -21,8 +21,10 @@ import com.nageoffer.ai.ragent.knowledge.dao.entity.KnowledgeDocumentDO;
 
 /**
  * 知识库文档定时任务服务
- */
-public interface KnowledgeDocumentScheduleService {
+ 
+ * <p>
+ * 用于承载当前模块中的具体业务或基础设施能力。
+ */public interface KnowledgeDocumentScheduleService {
 
     /**
      * 根据文档信息创建或更新定时任务记录
