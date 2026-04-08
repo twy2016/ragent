@@ -17,6 +17,7 @@
 
 package com.nageoffer.ai.ragent.infra.chat;
 
+import lombok.NoArgsConstructor;
 import okhttp3.Call;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -24,16 +25,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * StreamCancellationHandle 工具类
  * 用于构建常见的取消句柄，统一幂等取消语义
- 
- * <p>
- * 用于承载当前模块中的具体业务或基础设施能力。
- */public final class StreamCancellationHandles {
+ */
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+public final class StreamCancellationHandles {
 
     private static final StreamCancellationHandle NOOP = () -> {
     };
-
-    private StreamCancellationHandles() {
-    }
 
     public static StreamCancellationHandle noop() {
         return NOOP;

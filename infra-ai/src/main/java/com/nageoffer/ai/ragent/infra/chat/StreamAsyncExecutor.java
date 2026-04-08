@@ -19,6 +19,7 @@ package com.nageoffer.ai.ragent.infra.chat;
 
 import com.nageoffer.ai.ragent.infra.http.ModelClientErrorType;
 import com.nageoffer.ai.ragent.infra.http.ModelClientException;
+import lombok.NoArgsConstructor;
 import okhttp3.Call;
 
 import java.util.concurrent.CompletableFuture;
@@ -33,12 +34,10 @@ import java.util.function.Consumer;
  * <p>
  * 主要用于把底层流式网络读取任务切到独立线程池执行，并统一处理线程池繁忙时的降级行为。
  */
-final class StreamAsyncExecutor {
+@NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+public final class StreamAsyncExecutor {
 
     private static final String STREAM_BUSY_MESSAGE = "流式线程池繁忙";
-
-    private StreamAsyncExecutor() {
-    }
 
     static StreamCancellationHandle submit(Executor executor,
                                            Call call,
