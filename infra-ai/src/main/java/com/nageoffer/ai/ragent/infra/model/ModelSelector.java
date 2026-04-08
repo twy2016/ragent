@@ -34,9 +34,11 @@ import java.util.stream.Collectors;
 /**
  * 模型选择器
  * 负责根据配置和当前需求（如普通对话、深度思考、Embedding等）选择合适的模型候选列表
- 
+  
  * <p>
  * 用于承载当前模块中的具体业务或基础设施能力。
+ * 候选列表的生成顺序分为三步：先过滤禁用项与能力不匹配项，再按 priority/id 排序，
+ * 最后把当前场景的首选模型提升到队头，并在绑定 provider 配置时跳过已熔断模型。
  */@Slf4j
 @Component
 @RequiredArgsConstructor
@@ -109,6 +111,7 @@ public class ModelSelector {
             String firstChoiceModelId,
             Boolean deepThinking) {
         List<AIModelProperties.ModelCandidate> enabled = candidates.stream()
+                // 深度思考模式下只保留显式声明 supportsThinking=true 的候选，避免路由到不支持 thinking 的模型。
                 .filter(c -> c != null && !Boolean.FALSE.equals(c.getEnabled()))
                 .filter(c -> !Boolean.TRUE.equals(deepThinking) || Boolean.TRUE.equals(c.getSupportsThinking()))
                 .sorted(Comparator
@@ -151,6 +154,7 @@ public class ModelSelector {
         Map<String, AIModelProperties.ProviderConfig> providers = properties.getProviders();
 
         return candidates.stream()
+                // 这一阶段把候选模型补齐 provider 配置，并顺带过滤掉已进入 OPEN/HALF_OPEN 不可调用状态的模型。
                 .map(candidate -> buildModelTarget(candidate, providers))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -192,6 +196,7 @@ public class ModelSelector {
         if (StrUtil.isNotBlank(candidate.getId())) {
             return candidate.getId();
         }
+        // 兼容旧配置未显式填写 id 的情况，确保健康检查与日志仍然有稳定主键。
         return String.format("%s::%s",
                 Objects.toString(candidate.getProvider(), "unknown"),
                 Objects.toString(candidate.getModel(), "unknown"));

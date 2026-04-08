@@ -36,9 +36,11 @@ import java.util.stream.Collectors;
  * <p>
  * 该服务通过模型路由器选择合适的嵌入模型，并在执行失败时自动进行降级处理
  * 支持单文本和批量文本的向量化操作
- 
+  
  * <p>
  * 用于承载当前模块中的具体业务或基础设施能力。
+ * 显式指定 modelId 的调用也会继续复用统一的路由执行器与健康检查逻辑，
+ * 只是把候选集收缩为单个目标模型，不会绕过熔断与失败记账机制。
  */@Service
 @Primary
 public class RoutingEmbeddingService implements EmbeddingService {
@@ -114,6 +116,7 @@ public class RoutingEmbeddingService implements EmbeddingService {
         if (!StringUtils.hasText(modelId)) {
             throw new RemoteException("Embedding 模型ID不能为空");
         }
+        // 这里仍从 selector 返回的当前可用候选中查找，避免显式 modelId 绕过可用性过滤。
         return selector.selectEmbeddingCandidates().stream()
                 .filter(target -> modelId.equals(target.id()))
                 .findFirst()

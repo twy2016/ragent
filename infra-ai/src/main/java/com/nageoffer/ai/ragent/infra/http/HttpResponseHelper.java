@@ -30,6 +30,9 @@ import java.nio.charset.StandardCharsets;
 /**
  * HTTP 响应处理工具类
  * 集中管理 OkHttp 响应读取、JSON 解析以及模型目标校验等公共逻辑
+ * <p>
+ * OkHttp 的 ResponseBody 属于一次性流，读取后不可重复消费；把读取入口集中在这里，
+ * 可以避免业务代码在日志打印、错误处理和 JSON 解析之间重复消费响应体。
  */
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public final class HttpResponseHelper {
@@ -43,6 +46,7 @@ public final class HttpResponseHelper {
         if (body == null) {
             return "";
         }
+        // bytes() 会一次性消费整个响应体，适合错误分支记录原始返回内容。
         return new String(body.bytes(), StandardCharsets.UTF_8);
     }
 
@@ -57,6 +61,7 @@ public final class HttpResponseHelper {
         if (body == null) {
             throw new ModelClientException(label + " 响应为空", ModelClientErrorType.INVALID_RESPONSE, null);
         }
+        // 这里直接消费响应体字符串；调用方如需保留原始内容，应在进入该方法前自行读取。
         String content = body.string();
         return GSON.fromJson(content, JsonObject.class);
     }

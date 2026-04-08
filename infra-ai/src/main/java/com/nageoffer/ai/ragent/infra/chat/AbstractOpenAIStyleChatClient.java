@@ -47,6 +47,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * OpenAI 兼容协议 ChatClient 抽象基类
+ * <p>
+ * 该抽象类统一收敛 OpenAI 风格协议下的请求体构建、鉴权、同步解析与流式读取逻辑；
+ * 子类只需要补充提供商名称、差异化请求字段，以及少量协议开关。
  */
 @Slf4j
 public abstract class AbstractOpenAIStyleChatClient implements ChatClient {
@@ -160,6 +163,7 @@ public abstract class AbstractOpenAIStyleChatClient implements ChatClient {
             }
             BufferedSource source = body.source();
             boolean completed = false;
+            // OpenAI 风格 SSE 以行为单位推送 data: 片段；空行、心跳行和脏数据统一在这一层兜底过滤。
             while (!cancelled.get()) {
                 String line = source.readUtf8Line();
                 if (line == null) {
@@ -182,9 +186,11 @@ public abstract class AbstractOpenAIStyleChatClient implements ChatClient {
                         break;
                     }
                 } catch (Exception parseEx) {
+                    // 个别提供商会混入无法反序列化的行，单行失败不应直接打断整条流。
                     log.warn("{} 流式响应解析失败: line={}", provider(), line, parseEx);
                 }
             }
+            // 只有明确收到 finish_reason 或 [DONE] 才认为正常结束，静默断流按异常处理。
             if (!cancelled.get() && !completed) {
                 throw new ModelClientException(provider() + " 流式响应异常结束", ModelClientErrorType.INVALID_RESPONSE, null);
             }
@@ -225,6 +231,7 @@ public abstract class AbstractOpenAIStyleChatClient implements ChatClient {
         JsonArray arr = new JsonArray();
         List<ChatMessage> messages = request.getMessages();
         if (CollUtil.isNotEmpty(messages)) {
+            // 这里只保留 OpenAI 兼容协议需要的 role/content 两个核心字段，其余语义由上层预先收敛。
             for (ChatMessage m : messages) {
                 JsonObject msg = new JsonObject();
                 msg.addProperty("role", toOpenAiRole(m.getRole()));

@@ -28,6 +28,7 @@ import lombok.NoArgsConstructor;
  * 支持从 delta/message 中提取 content，以及可选的 reasoning_content
  * <p>
  * 主要服务于兼容 OpenAI 风格流式返回格式的聊天客户端实现。
+ * 同时兼容两类常见载荷结构：增量流片段 `choices[].delta` 与一次性消息 `choices[].message`。
  */
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public final class OpenAIStyleSseParser {
@@ -74,6 +75,7 @@ public final class OpenAIStyleSseParser {
         if (choice == null) {
             return null;
         }
+        // 优先读取 delta，兼容标准 SSE 增量场景。
         if (choice.has("delta") && choice.get("delta").isJsonObject()) {
             JsonObject delta = choice.getAsJsonObject("delta");
             if (delta.has(fieldName)) {
@@ -83,6 +85,7 @@ public final class OpenAIStyleSseParser {
                 }
             }
         }
+        // 部分提供商会在非严格流式或最后一个分片里直接返回完整 message，这里做兜底兼容。
         if (choice.has("message") && choice.get("message").isJsonObject()) {
             JsonObject message = choice.getAsJsonObject("message");
             if (message.has(fieldName)) {

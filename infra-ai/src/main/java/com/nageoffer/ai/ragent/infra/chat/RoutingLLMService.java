@@ -39,6 +39,10 @@ import java.util.stream.Collectors;
 
 /**
  * 路由式 LLM 服务实现类
+ * <p>
+ * 同步调用直接复用通用模型降级执行器；
+ * 流式调用则额外增加“首包探测 + 事件缓冲”步骤，只有确认某个候选模型已稳定返回首个事件后，
+ * 才会把其输出正式提交给下游。
  */
 @Slf4j
 @Service
@@ -101,6 +105,7 @@ public class RoutingLLMService implements LLMService {
                 continue;
             }
 
+            // 流式场景不能一拿到句柄就直接透传输出，否则切换候选模型时会把多路内容串到同一个回调里。
             FirstPacketAwaiter awaiter = new FirstPacketAwaiter();
             ProbeBufferingCallback wrapper = new ProbeBufferingCallback(callback, awaiter);
 
@@ -122,6 +127,7 @@ public class RoutingLLMService implements LLMService {
                 continue;
             }
 
+            // 只等待首个有效事件，不等待整条流完成；确认成功后再把缓冲区中的事件一次性放行。
             FirstPacketAwaiter.Result result = awaitFirstPacket(awaiter, handle, callback);
 
             // 判断结果
@@ -133,6 +139,7 @@ public class RoutingLLMService implements LLMService {
 
             // 失败处理
             healthStore.markFailure(target.id());
+            // 当前候选未通过首包探测后，主动取消底层连接，避免旧连接继续向 callback 写数据。
             handle.cancel();
 
             lastError = buildLastErrorAndLog(result, target, label);
@@ -159,6 +166,7 @@ public class RoutingLLMService implements LLMService {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             handle.cancel();
+            // 线程中断表示调用链已明确要求停止，这里直接对外报错，不再继续尝试下一个候选模型。
             RemoteException interruptedException = new RemoteException(STREAM_INTERRUPTED_MESSAGE, e, BaseErrorCode.REMOTE_ERROR);
             callback.onError(interruptedException);
             throw interruptedException;

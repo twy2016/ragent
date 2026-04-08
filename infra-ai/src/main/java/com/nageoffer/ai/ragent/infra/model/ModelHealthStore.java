@@ -28,9 +28,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * 模型健康状态存储器
  * 用于管理和跟踪各个 AI 模型的健康状况，实现断路器模式
- 
+  
  * <p>
  * 用于承载当前模块中的具体业务或基础设施能力。
+ * 维护三态状态机：
+ * CLOSED 表示正常放行，OPEN 表示熔断冷却中，HALF_OPEN 表示只允许单个探测请求试运行。
  */@Component
 @RequiredArgsConstructor
 public class ModelHealthStore {
@@ -44,6 +46,7 @@ public class ModelHealthStore {
         if (health == null) {
             return false;
         }
+        // 该方法只做静态可用性判断，不负责推进 OPEN -> HALF_OPEN 的状态切换。
         if (health.state == State.OPEN && health.openUntil > System.currentTimeMillis()) {
             return true;
         }
@@ -57,6 +60,7 @@ public class ModelHealthStore {
         }
         long now = System.currentTimeMillis();
         AtomicBoolean allowed = new AtomicBoolean(false);
+        // 所有状态转换都收敛在 compute 中，保证并发场景下 HALF_OPEN 只放过一个探测请求。
         healthById.compute(id, (k, v) -> {
             if (v == null) {
                 v = new ModelHealth();
@@ -65,6 +69,7 @@ public class ModelHealthStore {
                 if (v.openUntil > now) {
                     return v;
                 }
+                // 冷却期结束后进入 HALF_OPEN，并把这次调用标记为唯一探测请求。
                 v.state = State.HALF_OPEN;
                 v.halfOpenInFlight = true;
                 allowed.set(true);
@@ -74,6 +79,7 @@ public class ModelHealthStore {
                 if (v.halfOpenInFlight) {
                     return v;
                 }
+                // HALF_OPEN 下只有前一个探测请求已结束，才允许下一次试探。
                 v.halfOpenInFlight = true;
                 allowed.set(true);
                 return v;
@@ -110,6 +116,7 @@ public class ModelHealthStore {
                 v = new ModelHealth();
             }
             if (v.state == State.HALF_OPEN) {
+                // 探测请求失败时立即重新打开熔断，而不是继续累计失败次数。
                 v.state = State.OPEN;
                 v.openUntil = now + properties.getSelection().getOpenDurationMs();
                 v.consecutiveFailures = 0;
@@ -118,6 +125,7 @@ public class ModelHealthStore {
             }
             v.consecutiveFailures++;
             if (v.consecutiveFailures >= properties.getSelection().getFailureThreshold()) {
+                // CLOSED 状态下按阈值累计失败，达到阈值后进入 OPEN 冷却窗口。
                 v.state = State.OPEN;
                 v.openUntil = now + properties.getSelection().getOpenDurationMs();
                 v.consecutiveFailures = 0;

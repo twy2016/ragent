@@ -33,6 +33,7 @@ import java.util.function.Consumer;
  * 统一处理线程池提交、拒绝兜底和取消句柄构建逻辑
  * <p>
  * 主要用于把底层流式网络读取任务切到独立线程池执行，并统一处理线程池繁忙时的降级行为。
+ * 调用方拿到的取消句柄与底层 OkHttp Call 绑定，确保上层取消能及时中断网络读取。
  */
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public final class StreamAsyncExecutor {
@@ -47,6 +48,7 @@ public final class StreamAsyncExecutor {
         try {
             CompletableFuture.runAsync(() -> streamTask.accept(cancelled), executor);
         } catch (RejectedExecutionException ex) {
+            // 提交阶段失败时还没有真正开始读取流，这里直接回调错误并返回空取消句柄即可。
             call.cancel();
             callback.onError(new ModelClientException(STREAM_BUSY_MESSAGE, ModelClientErrorType.SERVER_ERROR, null, ex));
             return StreamCancellationHandles.noop();

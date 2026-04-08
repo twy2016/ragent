@@ -25,6 +25,9 @@ import java.util.List;
 
 /**
  * 流式首包探测回调
+ * <p>
+ * 在路由层确认“当前候选模型真的拿到首包”之前，所有事件先缓存在本地；
+ * 这样一旦首包超时或请求失败并切换到下一个模型，就不会把前一个候选的半截输出透传给下游。
  */
 public final class ProbeBufferingCallback implements StreamCallback {
 
@@ -77,6 +80,7 @@ public final class ProbeBufferingCallback implements StreamCallback {
             if (bufferedEvents.isEmpty()) {
                 return;
             }
+            // 先在锁内拍快照，再在锁外分发，避免下游回调阻塞网络读取线程。
             snapshot = new ArrayList<>(bufferedEvents);
             bufferedEvents.clear();
         }
@@ -87,6 +91,7 @@ public final class ProbeBufferingCallback implements StreamCallback {
 
     private void bufferOrDispatch(BufferedEvent event) {
         boolean dispatchNow;
+        // 通过同一把锁维护“提交前缓存、提交后直发”的切换点，保证事件顺序不乱。
         synchronized (lock) {
             dispatchNow = committed;
             if (!dispatchNow) {
@@ -103,6 +108,7 @@ public final class ProbeBufferingCallback implements StreamCallback {
             case CONTENT -> downstream.onContent(event.content());
             case THINKING -> downstream.onThinking(event.content());
             case COMPLETE -> downstream.onComplete();
+            // 探测阶段若上游只报告了空错误对象，这里补一个统一异常，避免下游收到 null。
             case ERROR -> downstream.onError(event.error() != null
                     ? event.error()
                     : new RemoteException("流式请求失败", BaseErrorCode.REMOTE_ERROR));

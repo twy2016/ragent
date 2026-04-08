@@ -30,9 +30,11 @@ import java.util.function.Function;
 /**
  * 模型路由执行器
  * 负责在多个模型候选者之间进行调度执行，并提供故障转移（Fallback）和健康检查机制
- 
+  
  * <p>
  * 用于承载当前模块中的具体业务或基础设施能力。
+ * 该执行器只保留“候选遍历、成功即返回、失败记账并降级”的公共骨架，
+ * 具体客户端解析和实际调用逻辑由外层通过函数式接口注入。
  */@Slf4j
 @Component
 @RequiredArgsConstructor
@@ -57,6 +59,7 @@ public class ModelRoutingExecutor {
                 log.warn("{} provider client missing: provider={}, modelId={}", label, target.candidate().getProvider(), target.id());
                 continue;
             }
+            // selector 负责排序和静态过滤，这里再调用 allowCall 用于占用 HALF_OPEN 探测资格。
             if (!healthStore.allowCall(target.id())) {
                 continue;
             }
@@ -66,6 +69,7 @@ public class ModelRoutingExecutor {
                 healthStore.markSuccess(target.id());
                 return response;
             } catch (Exception e) {
+                // 记录最近一次异常，便于所有候选都失败时向上层返回更具体的失败原因。
                 last = e;
                 healthStore.markFailure(target.id());
                 log.warn("{} model failed, fallback to next. modelId={}, provider={}", label, target.id(), target.candidate().getProvider(), e);
