@@ -439,6 +439,30 @@ export const useChatStore = create<ChatState>((set, get) => ({
       await start();
     } catch (error) {
       if ((error as Error).name === "AbortError") {
+        if (get().cancelRequested) {
+          set((state) => ({
+            messages: state.messages.map((message) => {
+              if (message.id !== state.streamingMessageId) return message;
+              const suffix = message.content.includes("（已停止生成）")
+                ? ""
+                : "\n\n（已停止生成）";
+              return {
+                ...message,
+                content: message.content + suffix,
+                status: "cancelled",
+                isThinking: false,
+                thinkingDuration:
+                  message.thinkingDuration ?? computeThinkingDuration(state.thinkingStartAt)
+              };
+            }),
+            isStreaming: false,
+            thinkingStartAt: null,
+            streamTaskId: null,
+            streamAbort: null,
+            streamingMessageId: null,
+            cancelRequested: false
+          }));
+        }
         return;
       }
       handlers.onError?.(error as Error);
@@ -455,12 +479,15 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }
   },
   cancelGeneration: () => {
-    const { isStreaming, streamTaskId } = get();
+    const { isStreaming, streamTaskId, streamAbort } = get();
     if (!isStreaming) return;
     set({ cancelRequested: true });
     if (streamTaskId) {
       stopTask(streamTaskId).catch(() => null);
     }
+    // 本地先中断 SSE 读取，立刻结束“等待中”状态；
+    // 若后端已拿到 taskId，stopTask 会继续负责终止服务端生成。
+    streamAbort?.();
   },
   appendStreamContent: (delta) => {
     if (!delta) return;

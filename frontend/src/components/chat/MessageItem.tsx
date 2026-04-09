@@ -5,6 +5,7 @@ import { FeedbackButtons } from "@/components/chat/FeedbackButtons";
 import { MarkdownRenderer } from "@/components/chat/MarkdownRenderer";
 import { ThinkingIndicator } from "@/components/chat/ThinkingIndicator";
 import { cn } from "@/lib/utils";
+import { useChatStore } from "@/stores/chatStore";
 import type { Message } from "@/types";
 
 interface MessageItemProps {
@@ -13,6 +14,7 @@ interface MessageItemProps {
 }
 
 export const MessageItem = React.memo(function MessageItem({ message, isLast }: MessageItemProps) {
+  const cancelRequested = useChatStore((state) => state.cancelRequested);
   const isUser = message.role === "user";
   const showFeedback =
     message.role === "assistant" &&
@@ -23,7 +25,8 @@ export const MessageItem = React.memo(function MessageItem({ message, isLast }: 
   const [thinkingExpanded, setThinkingExpanded] = React.useState(false);
   const hasThinking = Boolean(message.thinking && message.thinking.trim().length > 0);
   const hasContent = message.content.trim().length > 0;
-  const isWaiting = message.status === "streaming" && !isThinking && !hasContent;
+  const isStopping = cancelRequested && message.status === "streaming";
+  const isWaiting = message.status === "streaming" && !isThinking && !hasContent && !isStopping;
 
   if (isUser) {
     return (
@@ -77,6 +80,12 @@ export const MessageItem = React.memo(function MessageItem({ message, isLast }: 
           </div>
         ) : null}
         <div className="space-y-2">
+          {isStopping ? (
+            <div className="inline-flex items-center gap-2 text-sm text-[#EF4444]">
+              <span className="h-2 w-2 rounded-full bg-[#F87171] animate-pulse" />
+              停止中...
+            </div>
+          ) : null}
           {isWaiting ? (
             <div className="ai-wait" aria-label="思考中">
               <span className="ai-wait-dots" aria-hidden="true">

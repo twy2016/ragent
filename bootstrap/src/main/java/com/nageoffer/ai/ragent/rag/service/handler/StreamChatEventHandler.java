@@ -31,6 +31,7 @@ import com.nageoffer.ai.ragent.infra.config.AIModelProperties;
 import com.nageoffer.ai.ragent.rag.core.memory.ConversationMemoryService;
 import com.nageoffer.ai.ragent.rag.service.ConversationGroupService;
 
+import java.util.Map;
 import java.util.Optional;
 
 public class StreamChatEventHandler implements StreamCallback {
@@ -114,7 +115,10 @@ public class StreamChatEventHandler implements StreamCallback {
             messageId = memoryService.append(conversationId, userId, message);
         }
         String title = resolveTitleForEvent();
-        return new CompletionPayload(String.valueOf(messageId), title);
+        // 取消时如果没有实际落库内容，这里必须返回 null；
+        // 否则前端会把字面量 "null" 当成真实 messageId 使用。
+        String messageIdText = StrUtil.isBlank(messageId) ? null : messageId;
+        return new CompletionPayload(messageIdText, title);
     }
 
     @Override
@@ -125,6 +129,8 @@ public class StreamChatEventHandler implements StreamCallback {
         if (StrUtil.isBlank(chunk)) {
             return;
         }
+        // thinkingDuration 以“首个 thinking 片段”到“首个正式回答片段”为界，
+        // 避免把答案生成阶段也算进思考耗时。
         if (thinkingStartMs > 0 && thinkingDurationSeconds == 0) {
             thinkingDurationSeconds = Math.max(1, Math.round((System.currentTimeMillis() - thinkingStartMs) / 1000.0f));
         }
@@ -141,6 +147,7 @@ public class StreamChatEventHandler implements StreamCallback {
             return;
         }
         if (thinkingStartMs == 0) {
+            // 只有真正收到 reasoning 片段时才开始计时，避免把排队/首包等待算作思考时长。
             thinkingStartMs = System.currentTimeMillis();
         }
         thinking.append(chunk);
@@ -169,7 +176,10 @@ public class StreamChatEventHandler implements StreamCallback {
             return;
         }
         taskManager.unregister(taskId);
-        sender.fail(t);
+        // 显式发送 error 事件给前端，避免客户端只能看到连接中断却收不到终止状态。
+        sender.sendEvent(SSEEventType.ERROR.value(), Map.of("error", resolveErrorMessage(t)));
+        sender.sendEvent(SSEEventType.DONE.value(), "[DONE]");
+        sender.complete();
     }
 
     private void sendChunked(String type, String content) {
@@ -194,6 +204,8 @@ public class StreamChatEventHandler implements StreamCallback {
     }
 
     private Integer resolveThinkingDuration() {
+        // 当前实现只在拿到正文后冻结 thinkingDuration；
+        // 若模型没有正文直接结束，则该字段会保持 null。
         return thinkingDurationSeconds > 0 ? thinkingDurationSeconds : null;
     }
 
@@ -206,5 +218,12 @@ public class StreamChatEventHandler implements StreamCallback {
             return conversation.getTitle();
         }
         return "新对话";
+    }
+
+    private String resolveErrorMessage(Throwable throwable) {
+        if (throwable == null || StrUtil.isBlank(throwable.getMessage())) {
+            return "生成失败，请稍后再试";
+        }
+        return throwable.getMessage();
     }
 }

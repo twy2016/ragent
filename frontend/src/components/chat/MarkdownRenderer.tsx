@@ -16,8 +16,12 @@ interface MarkdownRendererProps {
   content: string;
 }
 
+const INLINE_CODE_CLASSNAME =
+  "rounded px-1.5 py-0.5 text-[13px] font-mono bg-[#f6f8fa] text-[#24292f] dark:bg-[#161b22] dark:text-[#c9d1d9]";
+
 export function MarkdownRenderer({ content }: MarkdownRendererProps) {
   const theme = useThemeStore((state) => state.theme);
+  const normalizedContent = React.useMemo(() => normalizeMarkdownContent(content), [content]);
 
   return (
     <ReactMarkdown
@@ -27,19 +31,19 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
           const match = /language-(\w+)/.exec(className || "");
           const language = match?.[1] || "text";
           const value = String(children).replace(/\n$/, "");
+          const inlineValue = normalizeInlineCodeValue(value);
 
           // 判断是否为内联代码：inline 为 true 或者没有换行符
           if (inline || !value.includes('\n')) {
             return (
               <code
                 className={cn(
-                  "rounded px-1.5 py-0.5 text-[13px] font-mono bg-[#f6f8fa] text-[#24292f]",
-                  "dark:bg-[#161b22] dark:text-[#c9d1d9]",
+                  INLINE_CODE_CLASSNAME,
                   className
                 )}
                 {...props}
               >
-                {children}
+                {inlineValue}
               </code>
             );
           }
@@ -127,14 +131,14 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
         th({ children, ...props }) {
           return (
             <th className="border-b border-[#d0d7de] border-r border-r-[#d0d7de] px-3 py-2 text-left text-sm font-semibold text-[#24292f] last:border-r-0 dark:border-[#30363d] dark:border-r-[#30363d] dark:text-[#c9d1d9]" {...props}>
-              {children}
+              {renderLooseBackticks(children)}
             </th>
           );
         },
         td({ children, ...props }) {
           return (
             <td className="border-b border-[#d0d7de] border-r border-r-[#d0d7de] px-3 py-2.5 text-sm text-[#24292f] last:border-r-0 dark:border-[#30363d] dark:border-r-[#30363d] dark:text-[#c9d1d9]" {...props}>
-              {children}
+              {renderLooseBackticks(children)}
             </td>
           );
         },
@@ -165,9 +169,75 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
       }}
       className="prose prose-gray max-w-none dark:prose-invert prose-headings:font-semibold prose-headings:text-[#1A1A1A] dark:prose-headings:text-[#EEEEEE] prose-p:text-[#333333] dark:prose-p:text-[#CCCCCC] prose-p:leading-relaxed prose-li:text-[#333333] dark:prose-li:text-[#CCCCCC] prose-strong:text-[#1A1A1A] dark:prose-strong:text-[#EEEEEE]"
     >
-      {content}
+      {normalizedContent}
     </ReactMarkdown>
   );
+}
+
+function normalizeMarkdownContent(content: string) {
+  if (!content) {
+    return "";
+  }
+
+  const lines = content.split(/\r?\n/);
+  let inFence = false;
+
+  return lines
+    .map((line) => {
+      if (/^\s*(```|~~~)/.test(line)) {
+        inFence = !inFence;
+        return line;
+      }
+
+      if (inFence) {
+        return line;
+      }
+
+      // 兼容模型常输出的 "###1. 标题" / "####问题分析" 这类标题写法。
+      // CommonMark 要求 # 后至少跟一个空格，否则不会被解析为 heading。
+      return line.replace(/^(\s{0,3}#{1,6})(?!\s|#)(.+)$/, "$1 $2");
+    })
+    .join("\n");
+}
+
+function normalizeInlineCodeValue(value: string) {
+  if (!value) {
+    return "";
+  }
+
+  // 兼容模型偶尔输出 `` `text` `` 这类“代码内容里又包了一层反引号”的情况。
+  if (/^`[^`\n]+`$/.test(value)) {
+    return value.slice(1, -1);
+  }
+
+  return value;
+}
+
+function renderLooseBackticks(children: React.ReactNode) {
+  return React.Children.toArray(children).flatMap((child, childIndex) => {
+    if (typeof child !== "string" || !child.includes("`")) {
+      return [child];
+    }
+
+    return child.split(/(`[^`\n]+`)/g).filter(Boolean).map((segment, segmentIndex) => {
+      if (/^`[^`\n]+`$/.test(segment)) {
+        return (
+          <code
+            key={`inline-code-${childIndex}-${segmentIndex}`}
+            className={INLINE_CODE_CLASSNAME}
+          >
+            {segment.slice(1, -1)}
+          </code>
+        );
+      }
+
+      return (
+        <React.Fragment key={`text-${childIndex}-${segmentIndex}`}>
+          {segment}
+        </React.Fragment>
+      );
+    });
+  });
 }
 
 function CopyButton({ value }: { value: string }) {

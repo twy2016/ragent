@@ -30,6 +30,12 @@ function parseData(raw: string): unknown {
   }
 }
 
+function createAbortError() {
+  const error = new Error("请求已取消");
+  error.name = "AbortError";
+  return error;
+}
+
 async function readSseStream(response: Response, handlers: StreamHandlers, signal?: AbortSignal) {
   if (!response.body) {
     throw new Error("流式响应为空");
@@ -40,6 +46,7 @@ async function readSseStream(response: Response, handlers: StreamHandlers, signa
   let buffer = "";
   let eventName = "message";
   let dataLines: string[] = [];
+  let terminalEventReceived = false;
 
   const dispatchEvent = () => {
     if (dataLines.length === 0) {
@@ -64,12 +71,15 @@ async function readSseStream(response: Response, handlers: StreamHandlers, signa
         }
         break;
       case "finish":
+        terminalEventReceived = true;
         handlers.onFinish?.(payload as CompletionPayload);
         break;
       case "done":
+        terminalEventReceived = true;
         handlers.onDone?.();
         break;
       case "cancel":
+        terminalEventReceived = true;
         handlers.onCancel?.(payload as CompletionPayload);
         break;
       case "reject":
@@ -79,6 +89,7 @@ async function readSseStream(response: Response, handlers: StreamHandlers, signa
         handlers.onTitle?.(payload as { title: string });
         break;
       case "error":
+        terminalEventReceived = true;
         handlers.onError?.(new Error(String((payload as { error?: string })?.error || payload)));
         break;
       default:
@@ -91,8 +102,8 @@ async function readSseStream(response: Response, handlers: StreamHandlers, signa
 
   while (true) {
     if (signal?.aborted) {
-      reader.cancel();
-      break;
+      await reader.cancel();
+      throw createAbortError();
     }
     const { value, done } = await reader.read();
     if (done) {
@@ -118,6 +129,10 @@ async function readSseStream(response: Response, handlers: StreamHandlers, signa
         dataLines.push(line.slice(5).trim());
       }
     }
+  }
+
+  if (!signal?.aborted && !terminalEventReceived) {
+    throw new Error("流式响应异常结束");
   }
 }
 

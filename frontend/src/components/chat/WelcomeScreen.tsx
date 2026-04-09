@@ -42,7 +42,14 @@ export function WelcomeScreen() {
   const [promptPresets, setPromptPresets] = React.useState<PromptPreset[]>(DEFAULT_PRESETS);
   const isComposingRef = React.useRef(false);
   const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
-  const { sendMessage, isStreaming, cancelGeneration, deepThinkingEnabled, setDeepThinkingEnabled } =
+  const {
+    sendMessage,
+    isStreaming,
+    cancelRequested,
+    cancelGeneration,
+    deepThinkingEnabled,
+    setDeepThinkingEnabled
+  } =
     useChatStore();
 
   const focusInput = React.useCallback(() => {
@@ -111,7 +118,9 @@ export function WelcomeScreen() {
 
   const handleSubmit = async () => {
     if (isStreaming) {
-      cancelGeneration();
+      if (!cancelRequested) {
+        cancelGeneration();
+      }
       focusInput();
       return;
     }
@@ -124,6 +133,7 @@ export function WelcomeScreen() {
   };
 
   const hasContent = value.trim().length > 0;
+  const isStopping = isStreaming && cancelRequested;
 
   return (
     <div className="relative flex min-h-full items-center justify-center overflow-hidden px-4 py-16 sm:px-6">
@@ -229,11 +239,13 @@ export function WelcomeScreen() {
               <button
                 type="button"
                 onClick={handleSubmit}
-                disabled={!hasContent && !isStreaming}
-                aria-label={isStreaming ? "停止生成" : "发送消息"}
+                disabled={cancelRequested || (!hasContent && !isStreaming)}
+                aria-label={isStopping ? "停止中" : isStreaming ? "停止生成" : "发送消息"}
                 className={cn(
                   "ml-auto inline-flex items-center justify-center rounded-full p-2.5 transition-all duration-200",
-                  isStreaming
+                  isStopping
+                    ? "cursor-wait bg-[#FEE2E2] text-[#F87171]"
+                    : isStreaming
                     ? "bg-[#FEE2E2] text-[#EF4444] hover:bg-[#FECACA]"
                     : hasContent
                       ? "bg-[#3B82F6] text-white hover:bg-[#2563EB]"
@@ -262,7 +274,8 @@ export function WelcomeScreen() {
               Shift + Enter
             </kbd>{" "}
             换行
-            {isStreaming ? <span className="ml-2 animate-pulse-soft">生成中...</span> : null}
+            {isStopping ? <span className="ml-2 animate-pulse-soft text-[#EF4444]">停止中...</span> : null}
+            {!isStopping && isStreaming ? <span className="ml-2 animate-pulse-soft">生成中...</span> : null}
           </p>
         </div>
 
