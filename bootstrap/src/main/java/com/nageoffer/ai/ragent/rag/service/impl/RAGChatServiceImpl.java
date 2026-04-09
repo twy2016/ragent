@@ -102,65 +102,70 @@ public class RAGChatServiceImpl implements RAGChatService {
         // 回调对象负责把模型增量输出、结束事件和异常统一写回 SSE，并串联记忆落库等后置逻辑。
         StreamCallback callback = callbackFactory.createChatEventHandler(emitter, actualConversationId, taskId);
 
-        String userId = UserContext.getUserId();
-        // 先把当前用户问题追加进会话记忆，再加载完整历史，确保后续改写/Prompt 看到的是最新上下文。
-        List<ChatMessage> history = memoryService.loadAndAppend(actualConversationId, userId, ChatMessage.user(question));
+        try {
+            String userId = UserContext.getUserId();
+            // 先把当前用户问题追加进会话记忆，再加载完整历史，确保后续改写/Prompt 看到的是最新上下文。
+            List<ChatMessage> history = memoryService.loadAndAppend(actualConversationId, userId, ChatMessage.user(question));
 
-        // 将原始问题改写成更适合检索的表达，并在需要时拆分出多个子问题。
-        RewriteResult rewriteResult = queryRewriteService.rewriteWithSplit(question, history);
-        // 针对改写后的问题与子问题做意图解析，决定后续走系统直答、知识库检索还是 MCP 工具分支。
-        List<SubQuestionIntent> subIntents = intentResolver.resolve(rewriteResult);
+            // 将原始问题改写成更适合检索的表达，并在需要时拆分出多个子问题。
+            RewriteResult rewriteResult = queryRewriteService.rewriteWithSplit(question, history);
+            // 针对改写后的问题与子问题做意图解析，决定后续走系统直答、知识库检索还是 MCP 工具分支。
+            List<SubQuestionIntent> subIntents = intentResolver.resolve(rewriteResult);
 
-        // 若问题存在明显歧义，优先让用户补充信息，避免在错误前提上继续检索和生成。
-        GuidanceDecision guidanceDecision = guidanceService.detectAmbiguity(rewriteResult.rewrittenQuestion(), subIntents);
-        if (guidanceDecision.isPrompt()) {
-            callback.onContent(guidanceDecision.getPrompt());
-            callback.onComplete();
-            return;
-        }
+            // 若问题存在明显歧义，优先让用户补充信息，避免在错误前提上继续检索和生成。
+            GuidanceDecision guidanceDecision = guidanceService.detectAmbiguity(rewriteResult.rewrittenQuestion(), subIntents);
+            if (guidanceDecision.isPrompt()) {
+                callback.onContent(guidanceDecision.getPrompt());
+                callback.onComplete();
+                return;
+            }
 
-        // 所有子问题都只命中系统节点时，说明无需外部检索，直接走系统 Prompt 流式回答即可。
-        boolean allSystemOnly = subIntents.stream()
-                .allMatch(si -> intentResolver.isSystemOnly(si.nodeScores()));
-        if (allSystemOnly) {
-            // 若节点提供了专用 Prompt 模板，则优先使用；否则回退到通用系统 Prompt。
-            String customPrompt = subIntents.stream()
-                    .flatMap(si -> si.nodeScores().stream())
-                    .map(ns -> ns.getNode().getPromptTemplate())
-                    .filter(StrUtil::isNotBlank)
-                    .findFirst()
-                    .orElse(null);
-            // 返回的 handle 用于后续 stopTask 时中断模型流式生成。
-            StreamCancellationHandle handle = streamSystemResponse(rewriteResult.rewrittenQuestion(), history, customPrompt, callback);
+            // 所有子问题都只命中系统节点时，说明无需外部检索，直接走系统 Prompt 流式回答即可。
+            boolean allSystemOnly = subIntents.stream()
+                    .allMatch(si -> intentResolver.isSystemOnly(si.nodeScores()));
+            if (allSystemOnly) {
+                // 若节点提供了专用 Prompt 模板，则优先使用；否则回退到通用系统 Prompt。
+                String customPrompt = subIntents.stream()
+                        .flatMap(si -> si.nodeScores().stream())
+                        .map(ns -> ns.getNode().getPromptTemplate())
+                        .filter(StrUtil::isNotBlank)
+                        .findFirst()
+                        .orElse(null);
+                // 返回的 handle 用于后续 stopTask 时中断模型流式生成。
+                StreamCancellationHandle handle = streamSystemResponse(rewriteResult.rewrittenQuestion(), history, customPrompt, callback);
+                taskManager.bindHandle(taskId, handle);
+                return;
+            }
+
+            // 非系统直答场景进入 RAG 检索，聚合知识库片段、MCP 工具结果等增强上下文。
+            RetrievalContext ctx = retrievalEngine.retrieve(subIntents, DEFAULT_TOP_K);
+            if (ctx.isEmpty()) {
+                // 没有命中有效上下文时直接友好返回，避免模型在无依据情况下自由发挥。
+                String emptyReply = "未检索到与问题相关的文档内容。";
+                callback.onContent(emptyReply);
+                callback.onComplete();
+                return;
+            }
+
+            // 聚合所有意图用于 prompt 规划
+            // 这里会把拆分后的多子问题意图合并，便于统一规划 Prompt 中的检索上下文和回答策略。
+            IntentGroup mergedGroup = intentResolver.mergeIntentGroup(subIntents);
+
+            // 组装最终 Prompt 并发起真正的流式模型调用。
+            StreamCancellationHandle handle = streamLLMResponse(
+                    rewriteResult,
+                    ctx,
+                    mergedGroup,
+                    history,
+                    thinkingEnabled,
+                    callback
+            );
+            // 将句柄绑定到任务，供 stopTask 或异常清理时取消底层流式请求。
             taskManager.bindHandle(taskId, handle);
-            return;
+        } catch (Exception e) {
+            log.warn("流式对话执行失败，会话ID：{}，任务ID：{}", actualConversationId, taskId, e);
+            callback.onError(e);
         }
-
-        // 非系统直答场景进入 RAG 检索，聚合知识库片段、MCP 工具结果等增强上下文。
-        RetrievalContext ctx = retrievalEngine.retrieve(subIntents, DEFAULT_TOP_K);
-        if (ctx.isEmpty()) {
-            // 没有命中有效上下文时直接友好返回，避免模型在无依据情况下自由发挥。
-            String emptyReply = "未检索到与问题相关的文档内容。";
-            callback.onContent(emptyReply);
-            callback.onComplete();
-            return;
-        }
-
-        // 聚合所有意图用于 prompt 规划
-        // 这里会把拆分后的多子问题意图合并，便于统一规划 Prompt 中的检索上下文和回答策略。
-        IntentGroup mergedGroup = intentResolver.mergeIntentGroup(subIntents);
-
-        // 组装最终 Prompt 并发起真正的流式模型调用。
-        StreamCancellationHandle handle = streamLLMResponse(
-                rewriteResult,
-                ctx,
-                mergedGroup,
-                history,
-                thinkingEnabled,
-                callback
-        );
-        // 将句柄绑定到任务，供 stopTask 或异常清理时取消底层流式请求。
-        taskManager.bindHandle(taskId, handle);
     }
 
     @Override

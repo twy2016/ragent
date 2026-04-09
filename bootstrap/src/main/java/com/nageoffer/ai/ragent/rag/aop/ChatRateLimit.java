@@ -26,6 +26,7 @@ import java.lang.annotation.Target;
  * 标记需要进行排队限流的 SSE 入口
  * <p>
  * 被该注解标记的方法会交由 ChatRateLimitAspect 接管，统一走全局并发控制与排队逻辑。
+ * 当前切面按约定的方法签名工作：第 2 个参数为 conversationId，第 4 个参数为 SseEmitter。
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

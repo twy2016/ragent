@@ -86,6 +86,8 @@ public class JdbcConversationMemoryStore implements ConversationMemoryStore {
     @Override
     public String append(String conversationId, String userId, ChatMessage message) {
         // 会话记忆中的每条消息都会落到消息表，保留原始对话明细。
+        // 这里会连同 thinkingContent / thinkingDuration 一起写入，
+        // 因此运行该版本前需要确保 t_message 已完成 v1.2 的 schema 升级。
         ConversationMessageBO conversationMessage = ConversationMessageBO.builder()
                 .conversationId(conversationId)
                 .userId(userId)
@@ -119,6 +121,8 @@ public class JdbcConversationMemoryStore implements ConversationMemoryStore {
         if (record == null || StrUtil.isBlank(record.getContent())) {
             return null;
         }
+        // 从消息表回放上下文时，除正文外也把思考内容和耗时一并恢复，
+        // 供前端历史消息展示与后续调试使用。
         return new ChatMessage(
                 ChatMessage.Role.fromString(record.getRole()),
                 record.getContent(),

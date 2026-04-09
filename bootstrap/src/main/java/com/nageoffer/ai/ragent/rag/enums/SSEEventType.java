@@ -55,7 +55,12 @@ public enum SSEEventType {
     /**
      * 拒绝事件
      */
-    REJECT("reject");
+    REJECT("reject"),
+
+    /**
+     * 错误事件
+     */
+    ERROR("error");
 
     private final String value;
 

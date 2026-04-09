@@ -108,6 +108,8 @@ public class ConversationMessageServiceImpl implements ConversationMessageServic
 
         List<ConversationMessageVO> result = new ArrayList<>();
         for (ConversationMessageDO record : records) {
+            // 会话历史查询会把思考内容和耗时一并返回，
+            // 这样前端重新加载历史消息时可以恢复深度思考展示。
             ConversationMessageVO vo = ConversationMessageVO.builder()
                     .id(String.valueOf(record.getId()))
                     .conversationId(record.getConversationId())

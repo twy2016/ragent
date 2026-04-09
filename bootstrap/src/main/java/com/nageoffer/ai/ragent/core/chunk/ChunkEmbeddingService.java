@@ -51,6 +51,8 @@ public class ChunkEmbeddingService {
         List<String> texts = chunks.stream()
                 .map(c -> c.getContent() == null ? "" : c.getContent())
                 .toList();
+        // 显式指定 embeddingModel 时也统一走 EmbeddingService，
+        // 让模型选择、健康检查和 provider 解析逻辑只维护一份。
         List<List<Float>> vectors = StringUtils.hasText(embeddingModel)
                 ? embeddingService.embedBatch(texts, embeddingModel)
                 : embeddingService.embedBatch(texts);

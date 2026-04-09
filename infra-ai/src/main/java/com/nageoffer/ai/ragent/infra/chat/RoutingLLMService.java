@@ -91,6 +91,8 @@ public class RoutingLLMService implements LLMService {
         if (!StringUtils.hasText(modelId)) {
             return chat(request);
         }
+        // 显式指定模型时，候选集会收缩为单一目标；
+        // 仍会经过可用性过滤和失败记账，但不会再跨模型兜底。
         return executor.executeWithFallback(
                 ModelCapability.CHAT,
                 List.of(resolveTarget(modelId, Boolean.TRUE.equals(request.getThinking()))),
@@ -229,6 +231,7 @@ public class RoutingLLMService implements LLMService {
     }
 
     private ModelTarget resolveTarget(String modelId, boolean deepThinking) {
+        // 这里从 selector 给出的“当前可用候选”里挑选，避免显式 modelId 绕过熔断或能力校验。
         return selector.selectChatCandidates(deepThinking).stream()
                 .filter(target -> modelId.equals(target.id()))
                 .findFirst()

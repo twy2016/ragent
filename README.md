@@ -198,7 +198,7 @@ Ragent 采用前后端分离的单体架构，后端按职责分为四个 Maven 
 | 对象存储   | S3 兼容存储（RustFS）                                        |
 | 消息队列   | RocketMQ 5.x                                                 |
 | 文档解析   | Apache Tika 3.2                                              |
-| 模型供应商 | 百炼（阿里云）、SiliconFlow、Ollama（本地）、vLLM（后续扩展） |
+| 模型供应商 | 百炼（阿里云）、SiliconFlow、Ollama（本地）、vLLM |
 | 认证鉴权   | Sa-Token                                                     |
 | 代码规范   | Spotless（自动格式化）                                       |
 

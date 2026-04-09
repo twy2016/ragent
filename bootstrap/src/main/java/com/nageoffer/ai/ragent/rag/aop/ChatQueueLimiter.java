@@ -66,11 +66,10 @@ import java.util.function.IntSupplier;
  * 核心职责：
  * 1. 通过 Redis 有序集合维护全局排队顺序；
  * 2. 通过 Redis 可过期信号量控制全局并发数；
- * 3. 在请求拿到执行资格后，将真正的业务入口投递到独立线程池执行。
- 
- * <p>
- * 用于承载当前模块中的具体业务或基础设施能力。
- */@Slf4j
+ * 3. 在请求拿到执行资格后，将真正的业务入口投递到独立线程池执行；
+ * 4. 排队超时后补记一条“系统繁忙”的会话结果，并通过 SSE 返回 reject/done 事件。
+ */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ChatQueueLimiter {
@@ -161,7 +160,9 @@ public class ChatQueueLimiter {
     }
 
     /**
-     * 等待请求排到队头并获取 permit；超时后返回系统繁忙结果。
+     * 等待请求排到可执行位置并获取 permit。
+     * <p>
+     * 若超过最大等待时间，则移除排队项，并向前端返回“系统繁忙”的 SSE 结束事件。
      */
     private void scheduleQueuePoll(RScoredSortedSet<String> queue,
                                    String requestId,

@@ -42,10 +42,9 @@ import java.util.Date;
  * <p>
  * 这里负责把流式对话入口包装成“可排队执行”的任务，并在真正执行时统一补齐 trace、
  * 记录运行状态和收敛异常处理。
- 
- * <p>
- * 用于承载当前模块中的具体业务或基础设施能力。
- */@Slf4j
+ * 该切面同时负责补齐 conversationId，并把真正的业务执行延后到排队成功之后。
+ */
+@Slf4j
 @Aspect
 @Component
 @RequiredArgsConstructor

@@ -92,7 +92,8 @@ import java.util.List;
      * <p>
      * 说明：
      * - modelId 为空时等同于 chat(request)，走默认路由
-     * - modelId 不为空时只使用指定模型，仍走路由层的健康检查与 fallback
+     * - modelId 不为空时只固定到该模型，仍复用路由层的健康检查、熔断和失败记账
+     * - 该模式不会再跨模型兜底到其他候选，适合“任务必须落到指定模型”的场景
      *
      * @param request ChatRequest 完整配置的请求
      * @param modelId 指定的模型ID，为空时走默认路由

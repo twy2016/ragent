@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * OpenAI 协议风格 SSE 解析器
- * 支持从 delta/message 中提取 content，以及可选的 reasoning_content
+ * 支持从 delta/message 中提取 content，以及可选的 reasoning/reasoning_content
  * <p>
  * 主要服务于兼容 OpenAI 风格流式返回格式的聊天客户端实现。
  * 同时兼容两类常见载荷结构：增量流片段 `choices[].delta` 与一次性消息 `choices[].message`。
@@ -57,10 +57,18 @@ public final class OpenAIStyleSseParser {
 
         JsonObject choice0 = choices.get(0).getAsJsonObject();
         String content = extractText(choice0, "content");
-        String reasoning = reasoningEnabled ? extractText(choice0, "reasoning_content") : null;
+        String reasoning = reasoningEnabled ? extractReasoning(choice0) : null;
         boolean completed = hasFinishReason(choice0);
 
         return new ParsedEvent(content, reasoning, completed);
+    }
+
+    private static String extractReasoning(JsonObject choice) {
+        String reasoning = extractText(choice, "reasoning");
+        if (reasoning != null && !reasoning.isEmpty()) {
+            return reasoning;
+        }
+        return extractText(choice, "reasoning_content");
     }
 
     private static boolean hasFinishReason(JsonObject choice) {

@@ -46,6 +46,11 @@ public enum ModelProvider {
     SILICON_FLOW("siliconflow"),
 
     /**
+     * vLLM OpenAI 兼容服务
+     */
+    VLLM("vllm"),
+
+    /**
      * 空实现，用于测试或占位
      */
     NOOP("noop");

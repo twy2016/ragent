@@ -89,13 +89,29 @@ public abstract class AbstractOpenAIStyleChatClient implements ChatClient {
         return true;
     }
 
+    /**
+     * 校验提供商配置
+     */
+    protected void validateProviderConfig(AIModelProperties.ProviderConfig providerConfig) {
+        if (requiresApiKey()) {
+            HttpResponseHelper.requireApiKey(providerConfig, provider());
+        }
+    }
+
+    /**
+     * 子类可覆写此方法定制请求头，例如可选鉴权
+     */
+    protected void customizeRequestHeaders(Request.Builder builder, AIModelProperties.ProviderConfig providerConfig) {
+        if (requiresApiKey()) {
+            builder.addHeader("Authorization", "Bearer " + providerConfig.getApiKey());
+        }
+    }
+
     // ==================== 模板方法：同步调用 ====================
 
     protected String doChat(ChatRequest request, ModelTarget target) {
         AIModelProperties.ProviderConfig provider = HttpResponseHelper.requireProvider(target, provider());
-        if (requiresApiKey()) {
-            HttpResponseHelper.requireApiKey(provider, provider());
-        }
+        validateProviderConfig(provider);
 
         JsonObject reqBody = buildRequestBody(request, target, false);
         Request requestHttp = newAuthorizedRequest(provider, target)
@@ -127,9 +143,7 @@ public abstract class AbstractOpenAIStyleChatClient implements ChatClient {
 
     protected StreamCancellationHandle doStreamChat(ChatRequest request, StreamCallback callback, ModelTarget target) {
         AIModelProperties.ProviderConfig provider = HttpResponseHelper.requireProvider(target, provider());
-        if (requiresApiKey()) {
-            HttpResponseHelper.requireApiKey(provider, provider());
-        }
+        validateProviderConfig(provider);
 
         JsonObject reqBody = buildRequestBody(request, target, true);
         Request streamRequest = newAuthorizedRequest(provider, target)
@@ -253,9 +267,7 @@ public abstract class AbstractOpenAIStyleChatClient implements ChatClient {
     private Request.Builder newAuthorizedRequest(AIModelProperties.ProviderConfig provider, ModelTarget target) {
         Request.Builder builder = new Request.Builder()
                 .url(ModelUrlResolver.resolveUrl(provider, target.candidate(), ModelCapability.CHAT));
-        if (requiresApiKey()) {
-            builder.addHeader("Authorization", "Bearer " + provider.getApiKey());
-        }
+        customizeRequestHeaders(builder, provider);
         return builder;
     }
 

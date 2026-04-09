@@ -47,18 +47,29 @@ public class ModelUrlResolver {
         if (candidate != null && candidate.getUrl() != null && !candidate.getUrl().isBlank()) {
             return candidate.getUrl();
         }
-        if (provider == null || provider.getUrl() == null || provider.getUrl().isBlank()) {
-            throw new IllegalStateException("Provider baseUrl is missing");
-        }
 
-        Map<String, String> endpoints = provider.getEndpoints();
+        Map<String, String> endpoints = provider == null ? null : provider.getEndpoints();
         String key = capability.name().toLowerCase();
         String path = endpoints == null ? null : endpoints.get(key);
         if (path == null || path.isBlank()) {
             throw new IllegalStateException("Provider endpoint is missing: " + key);
         }
+        if (isAbsoluteUrl(path)) {
+            return path;
+        }
+        if (provider == null || provider.getUrl() == null || provider.getUrl().isBlank()) {
+            throw new IllegalStateException("Provider baseUrl is missing");
+        }
 
         return joinUrl(provider.getUrl(), path);
+    }
+
+    private static boolean isAbsoluteUrl(String value) {
+        if (value == null) {
+            return false;
+        }
+        String trimmed = value.trim().toLowerCase();
+        return trimmed.startsWith("http://") || trimmed.startsWith("https://");
     }
 
     /**
