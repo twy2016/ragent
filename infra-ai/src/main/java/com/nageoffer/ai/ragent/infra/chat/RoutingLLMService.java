@@ -30,6 +30,7 @@ import com.nageoffer.ai.ragent.infra.model.ModelTarget;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -79,7 +80,20 @@ public class RoutingLLMService implements LLMService {
     public String chat(ChatRequest request) {
         return executor.executeWithFallback(
                 ModelCapability.CHAT,
-                selector.selectChatCandidates(request.getThinking()),
+                selector.selectChatCandidates(Boolean.TRUE.equals(request.getThinking())),
+                target -> clientsByProvider.get(target.candidate().getProvider()),
+                (client, target) -> client.chat(request, target)
+        );
+    }
+
+    @Override
+    public String chat(ChatRequest request, String modelId) {
+        if (!StringUtils.hasText(modelId)) {
+            return chat(request);
+        }
+        return executor.executeWithFallback(
+                ModelCapability.CHAT,
+                List.of(resolveTarget(modelId, Boolean.TRUE.equals(request.getThinking()))),
                 target -> clientsByProvider.get(target.candidate().getProvider()),
                 (client, target) -> client.chat(request, target)
         );
@@ -88,7 +102,7 @@ public class RoutingLLMService implements LLMService {
     @Override
     @RagTraceNode(name = "llm-stream-routing", type = "LLM_ROUTING")
     public StreamCancellationHandle streamChat(ChatRequest request, StreamCallback callback) {
-        List<ModelTarget> targets = selector.selectChatCandidates(request.getThinking());
+        List<ModelTarget> targets = selector.selectChatCandidates(Boolean.TRUE.equals(request.getThinking()));
         if (CollUtil.isEmpty(targets)) {
             throw new RemoteException(STREAM_NO_PROVIDER_MESSAGE);
         }
@@ -212,5 +226,12 @@ public class RoutingLLMService implements LLMService {
         );
         callback.onError(finalException);
         return finalException;
+    }
+
+    private ModelTarget resolveTarget(String modelId, boolean deepThinking) {
+        return selector.selectChatCandidates(deepThinking).stream()
+                .filter(target -> modelId.equals(target.id()))
+                .findFirst()
+                .orElseThrow(() -> new RemoteException("Chat 模型不可用: " + modelId));
     }
 }
