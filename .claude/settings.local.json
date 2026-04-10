@@ -46,7 +46,9 @@
       "Bash(mvn dependency:build-classpath:*)",
       "Bash(jar xf:*)",
       "Bash(mvn test:*)",
-      "Bash(mvn test-compile:*)"
+      "Bash(mvn test-compile:*)",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs"
     ]
   }
 }
